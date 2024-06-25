@@ -1,0 +1,4 @@
+resources
+.env
+cert
+node_modules

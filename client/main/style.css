@@ -1,0 +1,85 @@
+body{
+    background-color: #dddddd;
+}
+.header{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    column-gap: 2rem;
+}
+.header > div{
+    display: grid;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 3rem;
+    padding-bottom: 2rem;
+}
+h1{
+    text-align: center;
+    font-size: 6rem;
+}
+#countdown p{
+    text-align: center;
+    font-size: 2rem;
+}
+#countdown > p:nth-child(2){
+    font-size: 3.3rem;
+}
+.tasks-super-container{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+.tasks-header{
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 1fr max-content;
+}
+#new-task{
+    font-size: 1.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    border: solid 2px black;
+    margin: 1rem 2rem;
+    cursor: pointer;
+}
+h2{
+    font-size: 3rem;
+    padding: 1rem;
+}
+.task{
+    display: grid;
+    font-size: 1.6rem;
+    grid-template-columns: 1fr max-content max-content;
+    justify-content: center;
+    align-items: center;
+    border: solid 3px black;
+    border-left: solid 7px red;
+    margin: 0.5rem 1rem;
+}
+.task > p{
+    padding: 0 1rem;
+}
+.task-progress{
+    font-size: 1.3rem;
+    text-align: center;
+    background-color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-right: 2px solid black;
+    border-left: 2px solid black;
+    border-top: none;
+    border-bottom: none;
+}
+.task > a{
+    text-decoration: none;
+    color: black;
+    padding: 0.5rem 0.8rem;
+}
+.empty-message{
+    text-align: center;
+    font-size: 1.5rem;
+    color: #777777;
+    padding: 2rem;
+}

@@ -1,0 +1,37 @@
+body{
+    background-color: #dddddd;
+}
+.main-content{
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+.new-task-container{
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+}
+h1{
+    font-size: 4rem;
+    text-align: center;
+    padding: 1rem 2rem;
+}
+.new-task-container p{
+    font-size: 1.7rem;
+    padding: 0.5rem 0;
+}
+#task-description{
+    width: calc(55vw - 256px - 5rem);
+    height: 20vh;
+    font-size: 1.5rem;
+}
+#submit-btn{
+    width: max-content;
+    font-size: 2rem;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    border: solid 3px black;
+    margin: auto;
+    margin-top: 2rem;
+    cursor: pointer;
+}

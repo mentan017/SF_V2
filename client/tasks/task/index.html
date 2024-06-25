@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/common/reset.css">
+    <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/tasks/task/style.css">
+    <script type="text/javascript" src="/tasks/task/script.js" defer></script>
+    <title>Springfest Apps | Task</title>
+</head>
+<body>
+    <div class="navigation">
+        <div class="nav-img">
+            <img src="/images/sf24_logo_black_no_bg_256.png" alt="Springfest 2024 logo">
+        </div>
+        <a href="/">
+            <div>Home</div>
+        </a>
+        <a href="#">
+            <div>Meetings</div>
+        </a>
+        <a href="#">
+            <div>Teams</div>
+        </a>
+        <a href="#">
+            <div>Tools</div>
+        </a>
+        <a href="#">
+            <div>Configuration</div>
+        </a>
+        <a href="#">
+            <div>Help</div>
+        </a>
+    </div>
+    <div class="main-content">
+        <div><h1 id="task-index">Task #1</h1></div>
+        <div class="task-progress-container">
+            <p>Progress:</p>
+            <select id="task-progress">
+                <option value="0">Undone</option>
+                <option value="0.5">In Progress</option>
+                <option value="1">Done</option>
+            </select>
+            <ul id="progress-timestamps"></ul>
+        </div>
+        <div class="task-description-container">
+            <p>Description:</p>
+            <textarea autofocus="true" id="task-description"></textarea>
+        </div>
+    </div>
+    <div class="delete-container">
+        <div id="delete-btn">Delete Task</div>
+    </div>
+</body>
+</html>

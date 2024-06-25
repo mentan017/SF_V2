@@ -1,0 +1,30 @@
+body{
+    min-width: 100vw;
+    min-height: 100vh;
+}
+.navigation{
+    position: fixed;
+    height: 100vh;
+    width: max-content;
+    background-color: #ffffff;
+}
+.nav-img{
+    width: max-content;
+    margin: auto;
+    padding: 2rem 0.5rem;
+}
+.navigation a{
+    text-decoration: none;
+}
+.navigation a>div{
+    text-align: center;
+    font-size: 2rem;
+    color: black;
+    padding: 0.9rem 2rem;
+}
+.main-content{
+    width: calc(100vw - 256px - 5rem);
+    min-height: 100vh;
+    padding: 2rem;
+    margin-left: calc(256px + 1rem);
+}

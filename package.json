@@ -1,0 +1,28 @@
+{
+  "name": "sf_v2",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "App_Start": "nodemon server.js",
+    "Start_App": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-winston": "^4.2.0",
+    "formidable": "^3.5.1",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "mongoose": "^8.3.2",
+    "nodemon": "^3.1.0",
+    "uuid": "^9.0.1",
+    "winston": "^3.13.0"
+  }
+}
