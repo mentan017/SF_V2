@@ -1,0 +1,122 @@
+body{
+    background-color: #dddddd;
+}
+.header{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    column-gap: 2rem;
+}
+.header > div{
+    display: grid;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 3rem;
+    padding-bottom: 2rem;
+}
+h1{
+    font-size: 6rem;
+}
+.header p{
+    font-size: 2.5rem;
+}
+.create-team-prompt{
+    font-size: 4rem !important;
+    text-align: center;
+}
+#create-team-btn{
+    background-color: blue;
+    color: white;
+    font-size: 2rem;
+    width: max-content;
+    padding: 1rem 2.5rem;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    cursor: pointer;
+}
+.subsection-container{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+h2{
+    font-size: 3rem;
+    padding: 1rem;
+}
+#teams > a{
+    text-decoration: none;
+}
+.team-frame, .team{
+    color: black;
+    font-size: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 7fr 1fr 1fr 1fr;
+    margin: 0 1rem;
+    border: black solid 2px;
+    border-top: none;
+}
+.team-frame{
+    border-top: black solid 2px;
+}
+.team-frame p, .team p{
+    padding: 0.3rem 0.5rem;
+    border-left: solid 1px black;
+    border-right: solid 1px black;
+}
+.team:hover{
+    background: #eeeeee;
+}
+#create-team-form-super-container{
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.create-team-form-container{
+    background-color: #ffffff;
+    padding: 3rem;
+    border-radius: 1rem;
+}
+.create-team-form-container > p:nth-child(1){
+    font-size: 3rem;
+    padding: 1rem 2rem;
+}
+.input-label{
+    font-size: 1.5rem !important;
+    padding: 0.3rem;
+}
+#team-name-input{
+    font-size: 2rem;
+    width: calc(100% - 2rem - 4px);
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    border: solid 2px black;
+}
+.actions{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+.actions > div{
+    background-color: green;
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+    border-radius: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+}
+#cancel-btn{
+    background-color: red;
+}

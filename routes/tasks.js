@@ -126,8 +126,10 @@ router.put('/new', checkAuth, async function(req, res){
                 await task.save();
                 user.Tasks.push(task._id);
                 await user.save();
-                }
-            res.status(200).send({UUID: task.UUID});
+                res.status(200).send({UUID: task.UUID});
+            }else{
+                res.sendStatus(400);
+            }
         }else{
             res.sendStatus(400);
         }

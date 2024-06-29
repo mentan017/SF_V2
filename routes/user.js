@@ -22,7 +22,6 @@ const homeDir = path.join(__dirname, '..');
 async function checkAuth(req, res, next){
     try{
         //Check for cookies
-        console.log(req.cookies);
         if(req.cookies?.SID){
             //Check cookie validity
             req.AuthedUser = (await CookieModel.findOne({UUID: req.cookies.SID}))?.UserID;
@@ -39,25 +38,15 @@ async function checkAuth(req, res, next){
         res.sendStatus(500);
     }
 }
-async function sayHello(req, res, next){
-    try{
-        console.log("Hello World!");
-        next();
-    }catch(e){
-        console.log(e);
-    }
-}
 
 //Routes
 
 //GET routes
 router.get('/', function(req, res){
-    console.log("test");
     res.status(301).redirect('/user/dashboard');
 });
 router.get('/dashboard', checkAuth, async function(req, res, next){
     try{
-        console.log(req.AuthedUser);
         var user = await UserModel.findById(req.AuthedUser);
         if(user.CanManageAllUsers){
             res.status(200).sendFile(`${homeDir}/client/users/dashboard/index.html`);

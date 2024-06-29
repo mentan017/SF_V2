@@ -19,6 +19,9 @@ const TeamSchema = new mongoose.Schema({
     Users:[{ //Each user has one profile for each team they are in, it defines their permissions, t-shirt, etc
         type: mongoose.Schema.Types.ObjectId
     }],
+    UUID:{
+        type: String
+    }
 });
 
 module.exports = mongoose.model('Team', TeamSchema);
