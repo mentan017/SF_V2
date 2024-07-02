@@ -48,7 +48,7 @@ router.get('/', function(req, res){
 router.get('/dashboard', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
-        if(user.CanManageAllUsers){
+        if(user?.CanManageAllUsers){
             res.status(200).sendFile(`${homeDir}/client/users/dashboard/index.html`);
         }else{
             res.status(401).redirect('/');
@@ -60,6 +60,35 @@ router.get('/dashboard', checkAuth, async function(req, res, next){
 });
 
 //POST routes
+router.post('/user-permissions', checkAuth, async function(req, res, next){
+    try{
+        //TODO Give general information about user permissions (access to routes, management rights, ...)
+        var user = await UserModel.findById(req.AuthedUser);
+        if(user){
+            var response = {
+                Name: user.Name,
+                Nickname: user.Nickname,
+                Email: user.Email,
+                TeamsRouteAccess: false,
+                UserRouteAccess: false,
+                ConfigurationRouteAccess: false,
+                //TODO add other routes access
+                ManageAllTeams: user.CanManageAllTeams,
+                ManageAllUsers: user.CanManageAllUsers,
+            }
+            //TODO go through all user profiles to check for permissions (teams access)
+            if(response.ManageAllTeams) response.TeamsRouteAccess = true;
+            if(response.ManageAllUsers) response.UserRouteAccess = true;
+
+            res.status(200).send(response);
+        }else{
+            res.status(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 
 //Export router
 module.exports = router;

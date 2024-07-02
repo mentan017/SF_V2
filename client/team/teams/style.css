@@ -1,12 +1,14 @@
 body{
     background-color: #dddddd;
 }
-.header{
+#header{
     display: grid;
-    grid-template-columns: 3fr 1fr;
     column-gap: 2rem;
 }
-.header > div{
+#header.create-team-enabled{
+    grid-template-columns: 3fr 1fr;
+}
+#header > div{
     display: grid;
     align-items: center;
     background-color: #ffffff;
@@ -17,7 +19,7 @@ body{
 h1{
     font-size: 6rem;
 }
-.header p{
+#header p{
     font-size: 2.5rem;
 }
 .create-team-prompt{
@@ -47,7 +49,7 @@ h2{
 #teams > a{
     text-decoration: none;
 }
-.team-frame, .team{
+.team-template, .team{
     color: black;
     font-size: 1.5rem;
     justify-content: center;
@@ -58,10 +60,10 @@ h2{
     border: black solid 2px;
     border-top: none;
 }
-.team-frame{
+.team-template{
     border-top: black solid 2px;
 }
-.team-frame p, .team p{
+.team-template p, .team p{
     padding: 0.3rem 0.5rem;
     border-left: solid 1px black;
     border-right: solid 1px black;

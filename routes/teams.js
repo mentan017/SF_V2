@@ -55,6 +55,54 @@ router.get('/teams', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+router.get('/team/:uuid', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        var team = await TeamModel.find({UUID: req.params?.uuid});
+        var userProfiles = []; //TODO query all profiles linked to the user and check if one of the profiles has access to the team
+        var CanAccessTeam = false;
+        if(user.CanManageAllTeams) CanAccessTeam = true;
+        if(CanAccessTeam){
+            res.status(200).sendFile(`${homeDir}/client/team/team/index.html`);
+        }else{
+            res.status(401).redirect('/');
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(200);
+    }
+});
+
+//POST routes
+
+router.post('/list-teams', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        var teams = [];
+        var response = [];
+        if(user.CanManageAllTeams){
+            teams = await TeamModel.find({}, null, {sort: {Name: 1}});
+        }else{
+            //TODO go through all the profiles and get the teams from those profiles that can be accessed
+        }
+        for(var i=0; i<teams.length; i++){
+            var Members = await GetTeamMembers(teams[i]._id);
+            response.push({
+                Name: teams[i].Name,
+                UUID: teams[i].UUID,
+                Managers: GetMembersOfRole("Manager", Members),
+                Coaches: GetMembersOfRole("Coach", Members),
+                TotalMembers: Members.length
+            })
+        }
+        res.status(200).send(response);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//PUT routes
 
 router.put('/create-team', checkAuth, async function(req, res, next){
     try{
@@ -62,7 +110,7 @@ router.put('/create-team', checkAuth, async function(req, res, next){
         if(req.body?.TeamName && user.CanManageAllTeams){
             //TODO Create default roles: Manager, Member, Coach
             var roles = [];
-            var team = await new TeamModel({
+            var team = new TeamModel({
                 Name: req.body.TeamName,
                 UUID: uuidv4(),
                 Roles: roles
@@ -77,6 +125,27 @@ router.put('/create-team', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+
+//Functions
+
+async function GetTeamMembers(teamId){
+    try{
+        var team = await TeamModel.findById(teamId);
+        var profiles = [];
+        //TODO Get all the users and sort them by their role
+        return profiles
+    }catch(e){
+        console.log(0);
+        return [];
+    }
+}
+function GetMembersOfRole(Role, Members){
+    var members = 0;
+    for(var i=0; i<Members.length; i++){
+        if(Members[i].Role == Role) members++;
+    }
+    return members;
+}
 
 //Export router
 module.exports = router;
