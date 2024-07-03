@@ -24,11 +24,31 @@ const UserSchema = new mongoose.Schema({
         type: Number
     },
     //General user permissions
+    CanAccessMeetings:{
+        type: Boolean,
+        default: false
+    },
+    CanAccessTeams:{
+        type: Boolean,
+        default: false
+    },
+    CanManageAllMeetings:{
+        type: Boolean,
+        default: false
+    },
     CanManageAllTeams:{
         type: Boolean,
         default: false
     },
     CanManageAllUsers:{
+        type: Boolean,
+        default: false
+    },
+    CanManageConfiguration:{
+        type: Boolean,
+        default: false
+    },
+    CanUseTools:{
         type: Boolean,
         default: false
     }

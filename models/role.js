@@ -12,17 +12,20 @@ const RoleSchema = new mongoose.Schema({
         type: String
     },
     GetsTShirt:{
-        type: Boolean
+        type: Boolean,
+        default: true
     },
     OverridesTShirtTeamPriority:{
         type: Boolean,
         default: false
     },
     CanManageSubTeams:{
-        type: Boolean
+        type: Boolean,
+        default: false
     },
     CanManageTeam:{
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 });
 

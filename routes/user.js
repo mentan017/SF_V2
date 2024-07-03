@@ -60,6 +60,23 @@ router.get('/dashboard', checkAuth, async function(req, res, next){
 });
 
 //POST routes
+router.post('/get-user-navigation', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        var navigation = `<div class="nav-img"><img src="/images/sf24_logo_black_no_bg_256.png" alt="Springfest 2024 logo"></div>
+        <a href="/"><div>Home</div></a>`;
+        if(user.CanManageConfiguration) navigation += `<a href="#"><div>Configuration</div></a>`;
+        if(user.CanAccessMeetings || user.CanManageAllMeetings) navigation += `<a href="#"><div>Meetings</div></a>`;
+        if(user.CanAccessTeams || user.CanManageAllTeams) navigation += `<a href="/team/list-teams"><div>Teams</div></a>`;
+        if(user.CanUseTools) navigation += `<a href="#"><div>Tools</div></a>`;
+        if(user.CanManageAllUsers) navigation += `<a href="/user/dashboard"><div>Users</div></a>`;
+        navigation += `<a href="#"><div>Help</div></a>`;
+        res.status(200).send({Navigation: navigation});
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 router.post('/user-permissions', checkAuth, async function(req, res, next){
     try{
         //TODO Give general information about user permissions (access to routes, management rights, ...)

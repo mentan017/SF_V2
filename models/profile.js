@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const ProfileSchema = new mongoose.Schema({
+    Name:{
+        type: String
+    },
+    Email:{
+        type: String
+    },
     GetsTShirt:{
         type: Boolean
     },

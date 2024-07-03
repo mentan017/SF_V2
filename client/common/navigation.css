@@ -2,7 +2,7 @@ body{
     min-width: 100vw;
     min-height: 100vh;
 }
-.navigation{
+#navigation{
     position: fixed;
     height: 100vh;
     width: max-content;
@@ -13,10 +13,10 @@ body{
     margin: auto;
     padding: 2rem 0.5rem;
 }
-.navigation a{
+#navigation a{
     text-decoration: none;
 }
-.navigation a>div{
+#navigation a>div{
     text-align: center;
     font-size: 2rem;
     color: black;
