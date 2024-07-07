@@ -81,6 +81,24 @@ router.get('/team/:uuid', checkAuth, async function(req, res, next){
 
 //POST routes
 
+router.post('/list-roles', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+        var roles = [];
+        for(var i=0; i<team.Roles.length; i++){
+            var role = await RoleModel.findById(team.Roles[i]);
+            roles.push({
+                Name: role.Name,
+                ID: role._id
+            });
+        }
+        res.status(200).send(roles);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 router.post('/list-teams', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
@@ -99,9 +117,34 @@ router.post('/list-teams', checkAuth, async function(req, res, next){
                 Managers: GetMembersOfRole("Manager", Members),
                 Coaches: GetMembersOfRole("Coach", Members),
                 TotalMembers: Members.length
-            })
+            });
         }
         res.status(200).send(response);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/list-users', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+        if(team){
+            var profiles = [];
+            for(var i=0; i<team.Users.length; i++){
+                var profile = await ProfileModel.findById(team.Users[i]); //TODO fetch all profiles at once (and sort by name)
+                profiles.push({
+                    Name: profile.Name,
+                    Email: profile.Email,
+                    Role: profile.Role,
+                    TShirtSize: profile.TShirtSize,
+                    ID: profile._id
+                });
+            }
+            res.status(200).send(profiles);
+        }else{
+            req.sendStatus(400);
+        }
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -132,6 +175,21 @@ router.put('/create-team', checkAuth, async function(req, res, next){
     }
 });
 
+router.put('/upload-individual-user/:teamUUID', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
+        if(team){
+            AddTeamUser(team._id, req.body.Email, req.body.TShirtSize, req.body.Role);
+            res.sendStatus(200);
+        }else{
+            res.sendStatus(400);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 router.put('/upload-batch-users/:teamUUID', checkAuth, async function(req, res, next){
     try{
         //TODO authentification
@@ -250,20 +308,22 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
                     Year: "Teacher"
                 });
             }
+            var newUser = new UserModel({
+                Email: email,
+                Name: "Unnamed User",
+                Nickname: email.split("@")[0],
+                Password: "",
+                TShirtSize: tShirtSize,
+                Year: 0
+            });
             for(var i=0; i<allSchool.length; i++){
                 if(allSchool[i].Email == email){
-                    var newUser = new UserModel({
-                        Email: email,
-                        Name: allSchool[i].Name,
-                        Nickname: email.split("@")[0],
-                        Password: "",
-                        TShirtSize: tShirtSize,
-                        Year: allStudents[i].Year
-                    });
-                    await newUser.save();
+                    newUser.Name = allSchool[i].Name;
+                    newUser.Name = allSchool[i].Year;
                     i=allSchool.length;
                 }
             }
+            await newUser.save();
         }
         //Create the profile
         var role = await RoleModel.findById(roleID);
@@ -271,7 +331,7 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
         var newProfile = new ProfileModel({
             Name: user.Name,
             Email: email,
-            GetsTShirt: true,
+            GetsTShirt: true, //TODO get configuration for t-shirts
             Role: roleID,
             Team: teamID,
             TShirtSize: tShirtSize,
