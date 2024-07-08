@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
         default: "L"
     },
     Year:{
-        type: Number
+        type: String
     },
     //General user permissions
     CanAccessMeetings:{

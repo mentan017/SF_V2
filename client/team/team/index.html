@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/team/team/style.css">
     <script type="text/javascript" src="/common/navigation.js" defer></script>
     <script type="text/javascript" src="/team/team/script.js" defer></script>
-    <title>Springfest Apps | [Team Name]</title>
+    <title>Springfest Apps</title>
 </head>
 <body>
     <div id="navigation"></div>
@@ -23,36 +23,7 @@
                 <h2>Users</h2>
                 <div class="add-btn" id="add-users-btn">+ Add</div>
             </div>
-            <div id="users">
-                <div class="template users">
-                    <p>Name</p>
-                    <p>Email</p>
-                    <p>Year</p>
-                    <p>T-Shirt Size</p>
-                    <p>Role</p>
-                </div>
-                <div class="user">
-                    <a href="#"><div class="user-info">
-                        <p>Adrian</p>
-                        <p>example@student.edu</p>
-                        <p>S7FRC</p>
-                    </div></a>
-                    <select class="user-tshirt-input" data-userid="test">
-                        <option value="XXS">XXS</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                    <select class="user-role-input" data-userid="test">
-                        <option value="uuid1">Manager</option>
-                        <option value="uuid2">Member</option>
-                        <option value="uuid3">Coach</option>
-                    </select>
-                </div>
-            </div>
+            <div id="users"></div>
         </div>
         <div class="subsection-container">
             <div>
@@ -63,7 +34,7 @@
                 <div class="template subteams">
                     <p>Team Name</p>
                     <p>Members</p>
-                </div>    
+                </div>
             </div>
         </div>
         <div class="subsection-container">
@@ -71,12 +42,7 @@
                 <h2>Roles</h2>
                 <div class="add-btn" id="add-role-btn">+ Add</div>
             </div>
-            <div id="roles">
-                <div class="template roles">
-                    <p>Role</p>
-                    <p>Members</p>
-                </div>    
-            </div>
+            <div id="roles"></div>
         </div>
     </div>
     <div class="overlay-container" id="add-user-super-container" style="display: none;">
@@ -95,11 +61,7 @@
                         </div>
                         <div>
                             <p>Role: </p>
-                            <select class="user-role-input" id="user-role-input">
-                                <option value="uuid1">Manager</option>
-                                <option value="uuid2">Member</option>
-                                <option value="uuid3">Coach</option>
-                            </select>
+                            <select class="user-role-input" id="user-role-input"></select>
                         </div>
                         <p id="users-individual-error" class="error"></p>
                         <p id="submit-individual-user">Submit</p>
@@ -126,7 +88,23 @@
                     <p id="submit-bulk-users">Submit</p>
                 </div>
             </div>
-            <div id="cancel-users-btn">Cancel</div>
+            <div id="close-users-btn">Close</div>
+        </div>
+    </div>
+    <div class="overlay-container" id="add-role-super-container" style="display: none;">
+        <div class="add-role-container">
+            <h3>Add roles</h3>
+            <div class="new-role-form">
+                <div>
+                    <p>Role Name:</p>
+                    <input type="text" placeholder="Role Name" id="new-role-input">    
+                </div>
+            </div>
+            <p id="new-role-error" class="error"></p>
+            <div class="add-roles-actions">
+                <div id="close-roles-btn">Close</div>
+                <p id="submit-new-role">Submit</p>
+            </div>
         </div>
     </div>
 </body>

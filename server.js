@@ -8,6 +8,8 @@ require('dotenv').config();
 
 //Import routes
 const AuthRouter = require('./routes/auth.js');
+const ProfileRouter = require('./routes/profile.js');
+const RolesRouter = require('./routes/roles.js');
 const TasksRouter = require('./routes/tasks.js');
 const TeamRouter = require('./routes/teams.js');
 const UserRouter = require('./routes/user.js');
@@ -67,6 +69,8 @@ app.get('/', checkAuth, async function(req, res, next){
 
 //Connect routes
 app.use('/auth', AuthRouter);
+app.use('/profiles', ProfileRouter);
+app.use('/roles', RolesRouter);
 app.use('/tasks', TasksRouter);
 app.use('/team', TeamRouter);
 app.use('/user', UserRouter);

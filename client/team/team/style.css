@@ -55,25 +55,27 @@ h2{
 .users{
     grid-template-columns: 3fr 3fr 1fr 1fr 2fr;
 }
-.subteams, .roles{
-    grid-template-columns: 1fr max-content;
+.subteams, .roles, .role div{
+    grid-template-columns: 8fr 1fr;
 }
 .template{
     border-top: black solid 2px;
 }
-.user{
+.user, .role div{
     font-size: 1.3rem;
     display: grid;
-    grid-template-columns: 7fr 1fr 2fr;
     border: black solid 2px;
     border-top: none;
     margin: 0 1rem;
 }
-.user a{
+.user{
+    grid-template-columns: 7fr 1fr 2fr;
+}
+.user a, .role{
     text-decoration: none;
     color: black;
 }
-.user:hover{
+.user:hover, .role div:hover{
     background-color: #eeeeee;
 }
 .user:hover select{
@@ -103,7 +105,7 @@ h2{
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
 }
-.add-user-container{
+.add-user-container, .add-role-container{
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 1rem;
@@ -126,7 +128,7 @@ h2{
     padding: 0.7rem 1.5rem;
     margin: auto;
 }
-.individual-new-user-form > div, .file-upload-container, .bulk-new-users-fields > div{
+.individual-new-user-form > div, .file-upload-container, .bulk-new-users-fields > div, .new-role-form > div{
     font-size: 1.5rem;
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -135,7 +137,7 @@ h2{
     justify-content: center;
     margin: 0.5rem;
 }
-#user-email-input, #user-t-shirt-input, #user-role-input, #users-email-column, #users-t-shirt-column{
+#user-email-input, #user-t-shirt-input, #user-role-input, #users-email-column, #users-t-shirt-column, #new-role-input{
     padding: 0.35rem 1rem;
     font-size: 1.3rem;
 }
@@ -144,7 +146,8 @@ h2{
     border: solid 1px black;
     background-color: white;
 }
-#submit-individual-user, #submit-bulk-users, #cancel-users-btn{
+#submit-individual-user, #submit-bulk-users, #close-users-btn, #close-roles-btn, #submit-new-role{
+    height: 1.5rem;
     width: max-content;
     background-color: blue;
     color: white;
@@ -154,13 +157,17 @@ h2{
     margin: 1rem auto;
     cursor: pointer;
 }
-#cancel-users-btn{
+#close-users-btn, #close-roles-btn{
     background-color: red !important;
     margin-bottom: 0;
 }
-#users-individual-error, #users-bulk-error{
+.error{
     font-size: 1.3rem;
     color: red;
     width: max-content;
     margin: auto;
+}
+.add-roles-actions{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
