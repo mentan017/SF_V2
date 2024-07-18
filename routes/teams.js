@@ -343,7 +343,7 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
                 Nickname: email.split("@")[0],
                 Password: "",
                 TShirtSize: tShirtSize,
-                Year: "0"
+                Year: "Other"
             });
             for(var i=0; i<allSchool.length; i++){
                 if(allSchool[i].Email == email || allSchool[i].Email == `${(email.split("@")[0].toUpperCase())}@${email.split("@")[1]}`){

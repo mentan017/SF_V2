@@ -80,7 +80,11 @@ async function AddNewRole(){
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({TeamUUID: teamUUID, RoleName: RoleName})
         });
-        console.log(response.status);
+        if(response.status == 200){
+            GetRoles();
+        }else{
+            window.alert("An error occured in the servers, please try again later.");
+        }
     }else{
         document.getElementById("new-role-error").innerText = "Please provide a role name";
     }
@@ -175,7 +179,7 @@ function UpdateUsers(users){
         var userElement = document.createElement("div");
         userElement.className = "user";
         userElement.innerHTML = `
-        <a href="#"><div class="user-info">
+        <a href="/profiles/${users[i].ID}"><div class="user-info">
             <p>${users[i].Name}</p>
             <p>${users[i].Email}</p>
             <p>${users[i].Year}</p>

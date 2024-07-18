@@ -58,8 +58,20 @@ router.get('/', checkAuth, async function(req, res, next){
 router.put('/new-role', checkAuth, async function(req, res, next){
     try{
         //TODO authentification
-        console.log(req.body);
-        res.sendStatus(200);
+        var Team = await TeamModel.findOne({UUID: req.body?.TeamUUID});
+        if(Team){
+            var NewRole = new RoleModel({
+                Name: req.body?.RoleName,
+                Team: Team._id,
+                TShirtText: `${Team.Name} ${req.body?.RoleName}`
+            });
+            await NewRole.save();
+            Team.Roles.push(NewRole._id);
+            await Team.save();
+            res.sendStatus(200);
+        }else{
+            res.sendStatus(400);
+        }
     }catch(e){
         console.log(e);
         res.sendStatus(500);

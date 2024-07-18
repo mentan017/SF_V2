@@ -43,10 +43,109 @@ async function checkAuth(req, res, next){
 
 //Routes
 
-router.get('/', checkAuth, async function(req, res, next){
+//GET routes
+
+router.get('/:profileID', checkAuth, async function(req, res, next){
     try{
         //TODO authentification
         res.status(200).sendFile(`${homeDir}/client/profiles/profile/index.html`);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//POST routes
+
+router.post('/get-profile-info', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var profile = await ProfileModel.findById(req.body?.ProfileID);
+        if(profile){
+            var team = await TeamModel.findById(profile.Team);
+            var response = {
+                Name: profile.Name,
+                Email: profile.Email,
+                Year: (await UserModel.findById(profile.User)).Year,
+                TeamUUID: team.UUID,
+                TeamName: team.Name,
+                Role: profile.Role,
+                Roles: [],
+                CanManageSubTeams: profile.CanManageSubTeams,
+                CanManageTeam: profile.CanManageTeam,
+                GetsTShirt: profile.GetsTShirt,
+                TShirtSize: profile.TShirtSize,
+                TShirtText: profile.TShirtText
+            }
+            var rolesRaw = await RoleModel.find({Team: team._id}, null,{sort: {Name: 1}});
+            for(var i=0; i<rolesRaw.length; i++){
+                response.Roles.push({
+                    Name: rolesRaw[i].Name,
+                    ID: rolesRaw[i]._id
+                });
+            }
+            res.status(200).send(response);
+        }else{
+            res.sendStatus(400);
+        }
+    }catch(e){
+        console.log(e)
+        res.sendStatus(500);
+    }
+});
+
+//PUT routes
+
+router.put('/update-profile', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var request = req.body;
+        var profile = await ProfileModel.findById(request.ProfileID);
+        if(profile){
+            if(request.Role != profile.Role.toString()){
+                var role = await RoleModel.findById(request.Role);
+                profile.Role = request.Role;
+                profile.TShirtText = role.TShirtText;
+                profile.GetsTShirt = role.GetsTShirt;
+                profile.CanManageSubTeams = role.CanManageSubTeams;
+                profile.CanManageTeam = role.CanManageTeam;
+            }else{
+                profile.CanManageSubTeams = request.CanManageSubTeams;
+                profile.CanManageTeam = request.CanManageTeam;
+                profile.GetsTShirt = request.GetsTShirt;
+                profile.TShirtText = request.TShirtText;
+            }
+            profile.TShirtSize = request.TShirtSize;
+            await profile.save();
+            res.sendStatus(200);
+        }else{
+            res.sendStatus(400);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//DELETE routes
+
+router.delete('/remove', checkAuth, async function(req, res, next){
+    try{
+        //TODO authentification
+        var profile = await ProfileModel.findByIdAndDelete(req.body?.ProfileID);
+        if(profile){
+            var team = await TeamModel.findById(profile.Team);
+            //TODO remove from subteams
+            var UpdatedUsers = [];
+            for(var i=0; i<team.Users.length; i++){
+                if(team.Users[i].toString() != profile._id.toString()) UpdatedUsers.push(team.Users[i]);
+            }
+            team.Users = UpdatedUsers;
+            await team.save();
+            res.sendStatus(200);
+        }else{
+            res.sendStatus(400);
+        }
     }catch(e){
         console.log(e);
         res.sendStatus(500);
