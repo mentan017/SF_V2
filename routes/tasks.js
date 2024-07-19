@@ -56,7 +56,7 @@ router.post('/user-tasks', checkAuth, async function(req, res){
         var user = await UserModel.findById(req.AuthedUser);
         var tasks = [];
         for(var i=0; i<user.Tasks.length; i++){
-            var task = await TaskModel.findById(user.Tasks[i]);
+            var task = await TaskModel.findById(user.Tasks[user.Tasks.length-i-1]);
             var TimestampsLength = task.ProgressTimestamps.length;
             tasks.push({
                 UUID: task.UUID,

@@ -86,18 +86,21 @@ router.get('/team/:uuid', checkAuth, async function(req, res, next){
 
 router.post('/list-roles', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
-        var roles = [];
-        for(var i=0; i<team.Roles.length; i++){
-            var role = await RoleModel.findById(team.Roles[i]);
-            roles.push({
-                Name: role.Name,
-                ID: role._id,
-                MembersWithRole: (await ProfileModel.countDocuments({Role: role._id}))
-            });
+        if(CheckPermissions('list-roles', req.AuthedUser, req.body?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+            var roles = [];
+            for(var i=0; i<team.Roles.length; i++){
+                var role = await RoleModel.findById(team.Roles[i]);
+                roles.push({
+                    Name: role.Name,
+                    ID: role._id,
+                    MembersWithRole: (await ProfileModel.countDocuments({Role: role._id}))
+                });
+            }
+            res.status(200).send(roles);
+        }else{
+            res.sendStatus(401);
         }
-        res.status(200).send(roles);
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -130,24 +133,28 @@ router.post('/list-teams', checkAuth, async function(req, res, next){
 });
 router.post('/list-users', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
-        if(team){
-            var profilesRaw = await ProfileModel.find({Team: team._id}, null, {sort: {Name: 1}});
-            var profiles = [];
-            for(var i=0; i<profilesRaw.length; i++){
-                profiles.push({
-                    Name: profilesRaw[i].Name,
-                    Email: profilesRaw[i].Email,
-                    Role: profilesRaw[i].Role,
-                    TShirtSize: profilesRaw[i].TShirtSize,
-                    ID: profilesRaw[i]._id,
-                    Year: (await UserModel.findById(profilesRaw[i].User)).Year
-                });
-            }
-            res.status(200).send(profiles);
+        if(CheckPermissions('list-users', req.AuthedUser, req.body?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+            if(team){
+                var profilesRaw = await ProfileModel.find({Team: team._id}, null, {sort: {Name: 1}});
+                var profiles = [];
+                for(var i=0; i<profilesRaw.length; i++){
+                    profiles.push({
+                        Name: profilesRaw[i].Name,
+                        Email: profilesRaw[i].Email,
+                        Role: profilesRaw[i].Role,
+                        TShirtSize: profilesRaw[i].TShirtSize,
+                        GetsTShirt: profilesRaw[i].GetsTShirt,
+                        ID: profilesRaw[i]._id,
+                        Year: (await UserModel.findById(profilesRaw[i].User)).Year
+                    });
+                }
+                res.status(200).send(profiles);
+            }else{
+                req.sendStatus(400);
+            }    
         }else{
-            req.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
@@ -156,12 +163,19 @@ router.post('/list-users', checkAuth, async function(req, res, next){
 });
 router.post('/team-info', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
-        if(team){
-            res.status(200).send({TeamName: team.Name});
+        if(CheckPermissions('team-info', req.AuthedUser, req.body?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+            if(team){
+                res.status(200).send({
+                    TeamName: team.Name,
+                    TShirtColorName: team.TShirtColorName,
+                    TShirtColorHEX: team.TShirtColorHEX
+                });
+            }else{
+                res.sendStatus(400);
+            }
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
@@ -170,20 +184,45 @@ router.post('/team-info', checkAuth, async function(req, res, next){
 })
 router.post('/update-user', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var profile = await ProfileModel.findById(req.body?.UserID);
-        if(profile){
-            var role = await RoleModel.findById(req.body.Role);
-            profile.TShirtSize = req.body?.TShirtSize;
-            profile.Role = req.body?.Role;
-            profile.CanManageSubTeams = role.CanManageSubTeams;
-            profile.CanManageTeam = role.CanManageTeam;
-            profile.GetsTShirt = role.GetsTShirt;
-            profile.TShirtText = role.TShirtText;
-            await profile.save();
-            res.sendStatus(200);
+        if(CheckPermissions('update-user', req.AuthedUser, req.body?.teamUUID)){
+            var profile = await ProfileModel.findById(req.body?.UserID);
+            if(profile){
+                var role = await RoleModel.findById(req.body.Role);
+                profile.TShirtSize = req.body?.TShirtSize;
+                profile.Role = req.body?.Role;
+                profile.CanManageSubTeams = role.CanManageSubTeams;
+                profile.CanManageTeam = role.CanManageTeam;
+                profile.GetsTShirt = role.GetsTShirt;
+                profile.TShirtText = role.TShirtText;
+                await profile.save();
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/update-configuration', checkAuth, async function(req, res, next){
+    try{
+        if(CheckPermissions('update-configuration', req.AuthedUser, req.body?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.body?.teamUUID});
+            if(team){
+                team.Name = req.body?.TeamName;
+                team.TShirtColorName = req.body?.TShirtColorName;
+                team.TShirtColorHEX = (req.body?.TShirtColorHEX).toUpperCase();
+                await team.save();
+                UpdateRoles(team.Roles, team._id, req.body?.TeamName);
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }    
+        }else{
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
@@ -216,13 +255,16 @@ router.put('/create-team', checkAuth, async function(req, res, next){
 });
 router.put('/upload-individual-user/:teamUUID', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
-        if(team){
-            AddTeamUser(team._id, req.body.Email, req.body.TShirtSize, req.body.Role);
-            res.sendStatus(200);
+        if(CheckPermissions('upload-individual-user', req.AuthedUser, req.params?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
+            if(team){
+                AddTeamUser(team._id, req.body.Email, req.body.TShirtSize, req.body.Role);
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }    
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
@@ -231,37 +273,40 @@ router.put('/upload-individual-user/:teamUUID', checkAuth, async function(req, r
 });
 router.put('/upload-batch-users/:teamUUID', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
-        var form = new formidable.IncomingForm();
-        form.multiple = false;
-        form.parse(req, async function(err, fields, files){
-            if(err){
-                console.log(err);
-                res.sendStatus(500);
-            }else{
-                var originalFileName = files.files[0].originalFilename;
-                var filePath = await SaveFile(files.files[0].filepath, `${uuidv4()}`);
-                if(!filePath) res.sendStatus(500);
-                else{
-                    var EmailFieldColumn = originalFileName[0].toUpperCase();
-                    var TShirtSizeFieldColumn = originalFileName[1].toUpperCase();
-                    //Assign the member role or the first role to the new members
-                    var defaultRole = "";
-                    var roles = await RoleModel.find({Team: team._id});
-                    for(var i=0; i<roles.length; i++){
-                        defaultRole = roles[i]._id;
-                        if(roles[i].Name == "Member") i=roles.length+1;
+        if(CheckPermissions('upload-batch-users', req.AuthedUser, req.params?.teamUUID)){
+            var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
+            var form = new formidable.IncomingForm();
+            form.multiple = false;
+            form.parse(req, async function(err, fields, files){
+                if(err){
+                    console.log(err);
+                    res.sendStatus(500);
+                }else{
+                    var originalFileName = files.files[0].originalFilename;
+                    var filePath = await SaveFile(files.files[0].filepath, `${uuidv4()}`);
+                    if(!filePath) res.sendStatus(500);
+                    else{
+                        var EmailFieldColumn = originalFileName[0].toUpperCase();
+                        var TShirtSizeFieldColumn = originalFileName[1].toUpperCase();
+                        //Assign the member role or the first role to the new members
+                        var defaultRole = "";
+                        var roles = await RoleModel.find({Team: team._id});
+                        for(var i=0; i<roles.length; i++){
+                            defaultRole = roles[i]._id;
+                            if(roles[i].Name == "Member") i=roles.length+1;
+                        }
+                        var jsonData = excelToJson({sourceFile: filePath}).Sheet1;
+                        for(var i=1; i<jsonData.length; i++){
+                            AddTeamUser(team._id, jsonData[i][EmailFieldColumn], jsonData[i][TShirtSizeFieldColumn], defaultRole);
+                        }
+                        fs.unlinkSync(filePath);
                     }
-                    var jsonData = excelToJson({sourceFile: filePath}).Sheet1;
-                    for(var i=1; i<jsonData.length; i++){
-                        AddTeamUser(team._id, jsonData[i][EmailFieldColumn], jsonData[i][TShirtSizeFieldColumn], defaultRole);
-                    }
-                    fs.unlinkSync(filePath);
+                    res.sendStatus(200);
                 }
-                res.sendStatus(200);
-            }
-        });
+            });    
+        }else{
+            res.sendStatus(401);
+        }
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -295,8 +340,14 @@ async function UpdateRoles(roles, teamId, teamName){
     for(var i=0; i<roles.length; i++){
         var role = await RoleModel.findById(roles[i]);
         role.Team = teamId;
+        var oldText = role.TShirtText;
         role.TShirtText = `${teamName} ${role.Name}`;
         await role.save();
+        var profiles = await ProfileModel.find({Role: roles[i]});
+        for(var j=0; j<profiles.length; j++){
+            if(profiles[j].TShirtText == oldText) profiles[j].TShirtText = role.TShirtText;
+            await profiles[j].save();
+        }
     }
 }
 async function GetMembersOfRole(Role, teamId){
@@ -357,23 +408,66 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
         //Create the profile
         var role = await RoleModel.findById(roleID);
         var user = await UserModel.findOne({Email: email});
+        var GetsTShirt = true;
+        var otherProfiles = await ProfileModel.find({Email: email});
+        if(otherProfiles.length > 0){
+            //TODO get configuration for t-shirts
+            //! By default everybody gets only 1 t-shirt, to get more it HAS to be changed manually
+            if(role.OverridesTShirtTeamPriority){
+                GetsTShirt = true;
+            }
+            if(GetsTShirt){
+                for(var i=0; i<otherProfiles.length; i++){
+                    otherProfiles[i].GetsTShirt = false;
+                    await otherProfiles[i].save();
+                }
+            }
+        }
         var newProfile = new ProfileModel({
             Name: user.Name,
             Email: email,
-            GetsTShirt: true, //TODO get configuration for t-shirts
+            GetsTShirt: GetsTShirt,
             Role: roleID,
             Team: teamID,
             TShirtSize: tShirtSize,
             TShirtText: role.TShirtText,
             User: user._id,
             CanManageSubTeams: role.CanManageSubTeams,
-            CanManageTeam: role.CanManageTeam
+            CanManageTeam: role.CanManageTeam,
+            CanManageTeamConfiguration: role.CanManageTeamConfiguration
         });
         await newProfile.save();
         var team = await TeamModel.findById(teamID);
         team.Users.push(newProfile._id);
         await team.save();
     }
+}
+async function CheckPermissions(route, userID, teamUUID){
+    var routesConfiguration = [
+        {Route: 'list-roles', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+        {Route: 'list-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+        {Route: 'team-info', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
+        {Route: 'update-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+        {Route: 'update-configuration', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
+        {Route: 'upload-individual-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+        {Route: 'upload-batch-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']}
+    ];
+    var AllowAccess = false;
+    var team = await TeamModel.findOne({UUID: teamUUID});
+    var profile = await ProfileModel.findOne({Team: team._id, User: userID});
+    var user = await UserModel.findById(userID);
+    for(var i=0; i<routesConfiguration.length; i++){
+        if(route == routesConfiguration[i].Route){
+            for(var j=0; j<routesConfiguration[i].RequireOne.length; j++){
+                if(profile){
+                    if(user[routesConfiguration[i].RequireOne[j]] || profile[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                }else{
+                    if(user[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                }
+            }
+        }
+    }
+    return AllowAccess;
 }
 
 //Export router

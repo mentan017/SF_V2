@@ -31,6 +31,9 @@ const ProfileSchema = new mongoose.Schema({
     },
     CanManageTeam:{
         type: Boolean
+    },
+    CanManageTeamConfiguration:{
+        type: Boolean
     }
 });
 

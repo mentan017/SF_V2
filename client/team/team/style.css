@@ -9,9 +9,12 @@ body{
     padding: 3rem;
     padding-bottom: 2rem;
 }
-h1{
+#teamname-input{
+    font-family: "Times New Roman", Times, serif;
     font-size: 6rem;
+    border: none;
 }
+h1{font-size: 6rem;}
 .subsection-container{
     background-color: #ffffff;
     border-radius: 10px;
@@ -37,12 +40,12 @@ h2{
     margin: 0 1rem;
     cursor: pointer;
 }
-#users p, #subteams p, #roles p{
+#users p, #subteams p, #roles p, #configurations p{
     padding: 0.3rem 0.5rem;
     border-left: solid 1px black;
     border-right: solid 1px black;
 }
-.users, .subteams, .roles{
+.users, .subteams, .roles, .configuration{
     color: black;
     font-size: 1.5rem;
     justify-content: center;
@@ -52,11 +55,24 @@ h2{
     border: black solid 2px;
     border-top: none;
 }
+.configuration{
+    grid-template-columns: 1fr 3fr;
+}
 .users{
     grid-template-columns: 3fr 3fr 1fr 1fr 2fr;
 }
 .subteams, .roles, .role div{
     grid-template-columns: 8fr 1fr;
+}
+.configuration{
+    grid-template-columns: 1fr 3fr;
+}
+.configuration:nth-child(1){
+    border-top: black solid 2px;
+}
+.configuration input{
+    padding: 0.5rem;
+    border: none;
 }
 .template{
     border-top: black solid 2px;

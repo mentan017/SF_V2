@@ -73,6 +73,7 @@ router.post('/get-profile-info', checkAuth, async function(req, res, next){
                 Roles: [],
                 CanManageSubTeams: profile.CanManageSubTeams,
                 CanManageTeam: profile.CanManageTeam,
+                CanManageTeamConfiguration: profile.CanManageTeamConfiguration,
                 GetsTShirt: profile.GetsTShirt,
                 TShirtSize: profile.TShirtSize,
                 TShirtText: profile.TShirtText
@@ -93,10 +94,7 @@ router.post('/get-profile-info', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
-
-//PUT routes
-
-router.put('/update-profile', checkAuth, async function(req, res, next){
+router.post('/update-profile', checkAuth, async function(req, res, next){
     try{
         //TODO authentification
         var request = req.body;
@@ -109,10 +107,12 @@ router.put('/update-profile', checkAuth, async function(req, res, next){
                 profile.GetsTShirt = role.GetsTShirt;
                 profile.CanManageSubTeams = role.CanManageSubTeams;
                 profile.CanManageTeam = role.CanManageTeam;
+                profile.CanManageTeamConfiguration = role.CanManageTeamConfiguration;
             }else{
-                profile.CanManageSubTeams = request.CanManageSubTeams;
-                profile.CanManageTeam = request.CanManageTeam;
-                profile.GetsTShirt = request.GetsTShirt;
+                profile.CanManageSubTeams = request.CanManageSubTeams || false;
+                profile.CanManageTeam = request.CanManageTeam || false;
+                profile.CanManageTeamConfiguration = request.CanManageTeamConfiguration || false;
+                profile.GetsTShirt = request.GetsTShirt || false;
                 profile.TShirtText = request.TShirtText;
             }
             profile.TShirtSize = request.TShirtSize;

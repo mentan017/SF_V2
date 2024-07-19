@@ -26,6 +26,10 @@ const RoleSchema = new mongoose.Schema({
     CanManageTeam:{
         type: Boolean,
         default: false
+    },
+    CanManageTeamConfiguration:{
+        type: Boolean,
+        default: false
     }
 });
 

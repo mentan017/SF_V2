@@ -27,7 +27,6 @@ async function GetUserData(){
     });
     if(response.status == 200){
         var responseData = await response.json();
-        //TODO Do something
         AddHeader();
         if(responseData.ManageAllTeams){
             AddCreateTeamElement();

@@ -1,0 +1,57 @@
+body{
+    background-color: #dddddd;
+}
+#header > div{
+    display: grid;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 3rem;
+    padding-bottom: 2rem;
+}
+#header a{
+    padding: 0.5rem 0;
+}
+#rolename-input{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 6rem;
+    border: none;
+}
+.subsection-container{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+h2{
+    font-size: 3rem;
+    padding: 1rem;
+}
+.subsection-container > div:nth-child(1){
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    column-gap: 2rem;
+    justify-content: center;
+    align-items: center;
+}
+.inputs-container{
+    padding: 0.5rem 1rem;
+}
+.inputs-container > div{
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+}
+.inputs-container p, .inputs-container input, .inputs-container select{
+    padding: 0.5rem;
+    border: 2px solid black;
+}
+#delete-btn{
+    background-color: red;
+    color: white;
+    font-size: 1.8rem;
+    width: max-content;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    margin: auto;
+    cursor: pointer;
+}

@@ -41,19 +41,20 @@ async function DisplayData(profile){
     document.getElementById("role-input").value = profile.Role;
     document.getElementById("canManageSubTeams-input").value = profile.CanManageSubTeams;
     document.getElementById("canManageTeam-input").value = profile.CanManageTeam;
+    document.getElementById("canManageTeamConfiguration-input").value = profile.CanManageTeamConfiguration;
     document.getElementById("getstshirt-input").value = profile.GetsTShirt;
     document.getElementById("tshirtsize-input").value = profile.TShirtSize;
     document.getElementById("tshirttext-input").value = profile.TShirtText;
     AddEventListeners();
 }
 function RemoveEventListeners(){
-    var inputElements = ["role", "canManageSubTeams", "canManageTeam", "getstshirt", "tshirtsize", "tshirttext"];
+    var inputElements = ["role", "canManageSubTeams", "canManageTeam", "canManageTeamConfiguration", "getstshirt", "tshirtsize", "tshirttext"];
     for(var i=0; i<inputElements.length; i++){
         document.getElementById(`${inputElements[i]}-input`).removeEventListener("change", UpdateProfile);
     }
 }
 function AddEventListeners(){
-    var inputElements = ["role", "canManageSubTeams", "canManageTeam", "getstshirt", "tshirtsize", "tshirttext"];
+    var inputElements = ["role", "canManageSubTeams", "canManageTeam", "canManageTeamConfiguration", "getstshirt", "tshirtsize", "tshirttext"];
     for(var i=0; i<inputElements.length; i++){
         document.getElementById(`${inputElements[i]}-input`).addEventListener("change", UpdateProfile);
     }
@@ -64,16 +65,18 @@ async function UpdateProfile(){
     var role = document.getElementById("role-input").value;
     var canManageSubTeams = (document.getElementById("canManageSubTeams-input").value).toLowerCase();
     var canManageTeam = (document.getElementById("canManageTeam-input").value).toLowerCase();
+    var canManageTeamConfiguration = (document.getElementById("canManageTeamConfiguration-input").value).toLowerCase();
     var GetsTShirt = (document.getElementById("getstshirt-input").value).toLowerCase();
     var TShirtSize = (document.getElementById("tshirtsize-input").value);
     var TShirtText = (document.getElementById("tshirttext-input").value);
     canManageSubTeams = (canManageSubTeams.indexOf('t') != -1 || canManageSubTeams.indexOf('y') != -1) ? (true) : (false);
     canManageTeam = (canManageTeam.indexOf('t') != -1 || canManageTeam.indexOf('y') != -1) ? (true) : (false);
+    canManageTeamConfiguration = (canManageTeamConfiguration.indexOf('t') != -1 || canManageTeamConfiguration.indexOf('y') != -1) ? (true) : (false);
     GetsTShirt = (GetsTShirt.indexOf('t') != -1 || GetsTShirt.indexOf('y') != -1) ? (true) : (false);
     var response = await fetch('/profiles/update-profile', {
-        method: "PUT",
+        method: "POST",
         headers: {"Content-type": "application/json"},
-        body: JSON.stringify({ProfileID: profileID, Role: role, CanManageSubTeams: canManageSubTeams, CanManageTeam: canManageTeam, GetsTShirt: GetsTShirt, TShirtSize: TShirtSize, TShirtText: TShirtText})
+        body: JSON.stringify({ProfileID: profileID, Role: role, CanManageSubTeams: canManageSubTeams, CanManageTeam: canManageTeam, CanManageTeamConfiguration: canManageTeamConfiguration, GetsTShirt: GetsTShirt, TShirtSize: TShirtSize, TShirtText: TShirtText})
     });
     if(response.status == 200){
         GetProfileInfo();

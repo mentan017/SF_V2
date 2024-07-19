@@ -5,25 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/common/reset.css">
     <link rel="stylesheet" href="/common/navigation.css">
-    <link rel="stylesheet" href="/profiles/profile/style.css">
+    <link rel="stylesheet" href="/roles/role/style.css">
     <script type="text/javascript" src="/common/navigation.js" defer></script>
-    <script type="text/javascript" src="/profiles/profile/script.js" defer></script>
+    <script type="text/javascript" src="/roles/role/script.js" defer></script>
     <title>Springfest Apps</title>
 </head>
 <body>
     <div id="navigation"></div>
     <div class="main-content">
         <div id="header">
-            <div></div>
+            <div>
+                <input type="text" id="rolename-input" value="Member">
+                <a href="#">[PARENT TEAM]</a>
+            </div>
         </div>
         <div class="subsection-container">
             <div>
-                <h2>Role & Permissions</h2>
+                <h2>Configuration</h2>
             </div>
-            <div id="permissions-fields" class="inputs-container">
+            <div id="configuration-fields" class="inputs-container">
                 <div>
-                    <p>Role</p>
-                    <select id="role-input"></select>
+                    <p>T-Shirt Text</p>
+                    <input type="text" placeholder="Text on the back of the T-Shirt" id="tshirtText-input">
+                </div>
+                <div>
+                    <p>Gets a T-Shirt</p>
+                    <input type="text" placeholder="Choose 'true' or 'false'" id="getsTshirt-input">
+                </div>
+                <div>
+                    <p>OverridesTShirtTeamPriority</p>
+                    <input type="text" placeholder="Choose 'true' or 'false'" id="overridesTshirtTeamPriority-input">
                 </div>
                 <div>
                     <p>CanManageSubTeams</p>
@@ -39,27 +50,8 @@
                 </div>
             </div>
         </div>
-        <div class="subsection-container">
-            <div>
-                <h2>T-Shirt</h2>
-            </div>
-            <div id="t-shirt-fields" class="inputs-container">
-                <div>
-                    <p>Gets a T-Shirt</p>
-                    <input type="text" placeholder="Choose 'true' or 'false'" id="getstshirt-input">
-                </div>
-                <div>
-                    <p>T-Shirt Size</p>
-                    <input type="text" max-length="3" placeholder="T-Shirt Size" id="tshirtsize-input">
-                </div>
-                <div>
-                    <p>T-Shirt Text</p>
-                    <input type="text" max-length="100" placeholder="T-Shirt Text" id="tshirttext-input">
-                </div>
-            </div>
-        </div>
-        <div class="remove-container">
-            <div id="remove-btn">Remove from team</div>
+        <div class="delete-container">
+            <div id="delete-btn">Delete role</div>
         </div>
     </div>
 </body>

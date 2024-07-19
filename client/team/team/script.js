@@ -100,8 +100,14 @@ async function GetTeamInfo(){
     });
     if(response.status == 200){
         var responseData = await response.json();
-        document.getElementById("header").innerHTML = `<div><h1>${responseData.TeamName}</h1></div>`;
+        document.getElementById("header").innerHTML = `<div><input type="text" value="${responseData.TeamName}" id="teamname-input"></div>`;
         document.title = `Springfest Apps | ${responseData.TeamName}`;
+        document.getElementById("tshirt-color-name-input").value = responseData.TShirtColorName || "";
+        document.getElementById("tshirt-color-hex-input").value = responseData.TShirtColorHEX || "";
+        var elements = ["teamname-input", "tshirt-color-name-input", "tshirt-color-hex-input"];
+        for(var i=0; i<elements.length; i++){
+            document.getElementById(elements[i]).addEventListener("change", UpdateConfiguration);
+        }
     }else{
         window.alert("An error occured in the servers, please try again later.");
     }
@@ -154,7 +160,7 @@ function UpdateRoles(roles){
     for(var i=0; i<roles.length; i++){
         document.getElementById('user-role-input').innerHTML += `<option value="${roles[i].ID}">${roles[i].Name}</option>`;
         document.getElementById("roles").innerHTML += `
-        <a href="#" class="role">
+        <a href="/roles/${roles[i].ID}" class="role">
             <div>
                 <p>${roles[i].Name}</p>
                 <p>${roles[i].MembersWithRole}</p>
@@ -176,6 +182,8 @@ function UpdateUsers(users){
         rolesHTML += `<option value="${UserRoles[i].ID}">${UserRoles[i].Name}</option>`;
     }
     for(var i=0; i<users.length; i++){
+        var tshirtSizeStyle = '';
+        if(!users[i].GetsTShirt) tshirtSizeStyle = 'background-color:rgba(255, 0, 0, 0.5)';
         var userElement = document.createElement("div");
         userElement.className = "user";
         userElement.innerHTML = `
@@ -184,7 +192,7 @@ function UpdateUsers(users){
             <p>${users[i].Email}</p>
             <p>${users[i].Year}</p>
         </div></a>
-        <select class="user-tshirt-input" data-userid="${users[i].ID}">
+        <select class="user-tshirt-input" data-userid="${users[i].ID}" style="${tshirtSizeStyle}">
             <option value="XXS">XXS</option>
             <option value="XS">XS</option>
             <option value="S">S</option>
@@ -206,13 +214,26 @@ function UpdateUsers(users){
     }
 }
 async function UpdateUserFields(UserID){
+    var URL = (document.location.href).split("#").join("").split("/");
+    var teamUUID = URL[URL.length - 1];
     var inputs = document.querySelectorAll(`select[data-userid='${UserID}']`);
     var TShirtSize = inputs[0].value;
-    console.log(TShirtSize);
     var Role = inputs[1].value;
     var response = await fetch('/team/update-user', {
         method: "POST",
         headers: {"Content-type": "application/json"},
-        body: JSON.stringify({UserID: UserID, TShirtSize: TShirtSize, Role: Role})
+        body: JSON.stringify({teamUUID: teamUUID, UserID: UserID, TShirtSize: TShirtSize, Role: Role})
+    });
+}
+async function UpdateConfiguration(){
+    var URL = (document.location.href).split("#").join("").split("/");
+    var teamUUID = URL[URL.length - 1];
+    var teamName = document.getElementById("teamname-input").value;
+    var tshirtColorName = document.getElementById("tshirt-color-name-input").value;
+    var tshirtColorHEX = document.getElementById("tshirt-color-hex-input").value;
+    var response = await fetch('/team/update-configuration', {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({teamUUID: teamUUID, TeamName: teamName, TShirtColorName: tshirtColorName, TShirtColorHEX: tshirtColorHEX})
     });
 }
