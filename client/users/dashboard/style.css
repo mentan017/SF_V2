@@ -1,0 +1,70 @@
+body{
+    background-color: #dddddd;
+}
+#header{
+    display: grid;
+    column-gap: 2rem;
+    grid-template-columns: 1fr 1fr;
+}
+#header > div{
+    display: grid;
+    align-items: center;
+    background-color: #ffffff;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    padding: 3rem;
+    padding-bottom: 2rem;
+}
+h1{
+    font-size: 6rem;
+}
+#search-input{
+    width: calc(100% - 2rem);
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+}
+#search-btn{
+    background-color: blue;
+    font-size: 2rem;
+    color: white;
+    width: max-content;
+    padding: 1rem 2.5rem;
+    border-radius: 1rem;
+    margin: 1rem auto;
+    cursor: pointer;
+}
+.subsection-container{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+h2{
+    font-size: 3rem;
+    padding: 1rem;
+}
+#filters > a{
+    text-decoration: none;
+}
+.filter-template, .filter{
+    color: black;
+    font-size: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 7fr 1fr;
+    margin: 0 1rem;
+    border: black solid 2px;
+    border-top: none;
+}
+.filter-template{
+    border-top: black solid 2px;
+}
+.filter-template p, .filter p{
+    padding: 0.3rem 0.5rem;
+    border-left: solid 1px black;
+    border-right: solid 1px black;
+}
+.filter:hover{
+    background: #eeeeee;
+}
