@@ -13,6 +13,7 @@ body{
     font-family: "Times New Roman", Times, serif;
     font-size: 6rem;
     border: none;
+    max-width: calc(100% - 10rem);
 }
 h1{font-size: 6rem;}
 .subsection-container{
@@ -62,7 +63,7 @@ h2{
     grid-template-columns: 3fr 3fr 1fr 1fr 2fr;
 }
 .subteams, .roles, .role div{
-    grid-template-columns: 8fr 1fr;
+    grid-template-columns: 7fr 1fr;
 }
 .configuration{
     grid-template-columns: 1fr 3fr;

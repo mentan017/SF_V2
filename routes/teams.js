@@ -38,7 +38,7 @@ async function checkAuth(req, res, next){
                 res.status(401).clearCookie("SID").redirect('/auth/');
             }
         }else{
-            res.status(401).redirect('/auth/');
+            res.status(307).redirect('/auth/');
         }    
     }catch(e){
         console.log(e);
@@ -371,78 +371,83 @@ async function SaveFile(filepath, filename){
     }
 }
 async function AddTeamUser(teamID, email, tShirtSize, roleID){
-    if(!(await ProfileModel.findOne({Team: teamID, Email: email}))){
-        if(!(await UserModel.findOne({Email: email}))){
-            //Create a new user and profile
-            var allTeachers = await csv().fromFile(`${homeDir}/resources/${process.env.TEACHERSFILE}`);
-            var allStudents = await csv().fromFile(`${homeDir}/resources/${process.env.STUDENTSFILE}`);
-            var allSchool = [];
-            for(var i=0; i<allStudents.length; i++){
-                allSchool.push({
-                    Name: allStudents[i].displayName.split(" (IXL")[0],
-                    Email: allStudents[i].userPrincipalName,
-                    Year: allStudents[i].displayName.slice(-6, -1)
+    try{
+        if(!(await ProfileModel.findOne({Team: teamID, Email: email}))){
+            if(!(await UserModel.findOne({Email: email}))){
+                //Create a new user and profile
+                var allTeachers = (fs.existsSync(`${homeDir}/resources/${process.env.TEACHERSFILE}`)) ? (await csv().fromFile(`${homeDir}/resources/${process.env.TEACHERSFILE}`)) : ([]);
+                var allStudents = (fs.existsSync(`${homeDir}/resources/${process.env.STUDENTSFILE}`)) ? (await csv().fromFile(`${homeDir}/resources/${process.env.STUDENTSFILE}`)) : ([]);
+                var allSchool = [];
+                for(var i=0; i<allStudents.length; i++){
+                    allSchool.push({
+                        Name: allStudents[i].displayName.split(" (IXL")[0],
+                        Email: allStudents[i].userPrincipalName,
+                        Year: allStudents[i].displayName.slice(-6, -1)
+                    });
+                }
+                for(var i=0; i<allTeachers.length; i++){
+                    allSchool.push({
+                        Name: allTeachers[i].displayName,
+                        Email: allTeachers[i].userPrincipalName,
+                        Year: "Teacher"
+                    });
+                }
+                var newUser = new UserModel({
+                    Email: email,
+                    Name: "Unnamed User",
+                    Nickname: email.split("@")[0],
+                    Password: "",
+                    TShirtSize: tShirtSize,
+                    Year: "Other"
                 });
+                for(var i=0; i<allSchool.length; i++){
+                    if(allSchool[i].Email == email || allSchool[i].Email == `${(email.split("@")[0].toUpperCase())}@${email.split("@")[1]}`){
+                        newUser.Name = allSchool[i].Name;
+                        newUser.Year = allSchool[i].Year;
+                        i=allSchool.length;
+                    }
+                }
+                await newUser.save();
             }
-            for(var i=0; i<allTeachers.length; i++){
-                allSchool.push({
-                    Name: allTeachers[i].displayName,
-                    Email: allTeachers[i].userPrincipalName,
-                    Year: "Teacher"
-                });
+            //Create the profile
+            var role = await RoleModel.findById(roleID);
+            var user = await UserModel.findOne({Email: email});
+            var GetsTShirt = true;
+            var otherProfiles = await ProfileModel.find({Email: email});
+            if(otherProfiles.length > 0){
+                //TODO get configuration for t-shirts
+                //! By default everybody gets only 1 t-shirt, to get more it HAS to be changed manually
+                if(role.OverridesTShirtTeamPriority){
+                    GetsTShirt = true;
+                }
+                if(GetsTShirt){
+                    for(var i=0; i<otherProfiles.length; i++){
+                        otherProfiles[i].GetsTShirt = false;
+                        await otherProfiles[i].save();
+                    }
+                }
             }
-            var newUser = new UserModel({
+            var newProfile = new ProfileModel({
+                Name: user.Name,
                 Email: email,
-                Name: "Unnamed User",
-                Nickname: email.split("@")[0],
-                Password: "",
+                GetsTShirt: GetsTShirt,
+                Role: roleID,
+                Team: teamID,
                 TShirtSize: tShirtSize,
-                Year: "Other"
+                TShirtText: role.TShirtText,
+                User: user._id,
+                CanManageSubTeams: role.CanManageSubTeams,
+                CanManageTeam: role.CanManageTeam,
+                CanManageTeamConfiguration: role.CanManageTeamConfiguration
             });
-            for(var i=0; i<allSchool.length; i++){
-                if(allSchool[i].Email == email || allSchool[i].Email == `${(email.split("@")[0].toUpperCase())}@${email.split("@")[1]}`){
-                    newUser.Name = allSchool[i].Name;
-                    newUser.Year = allSchool[i].Year;
-                    i=allSchool.length;
-                }
-            }
-            await newUser.save();
-        }
-        //Create the profile
-        var role = await RoleModel.findById(roleID);
-        var user = await UserModel.findOne({Email: email});
-        var GetsTShirt = true;
-        var otherProfiles = await ProfileModel.find({Email: email});
-        if(otherProfiles.length > 0){
-            //TODO get configuration for t-shirts
-            //! By default everybody gets only 1 t-shirt, to get more it HAS to be changed manually
-            if(role.OverridesTShirtTeamPriority){
-                GetsTShirt = true;
-            }
-            if(GetsTShirt){
-                for(var i=0; i<otherProfiles.length; i++){
-                    otherProfiles[i].GetsTShirt = false;
-                    await otherProfiles[i].save();
-                }
-            }
-        }
-        var newProfile = new ProfileModel({
-            Name: user.Name,
-            Email: email,
-            GetsTShirt: GetsTShirt,
-            Role: roleID,
-            Team: teamID,
-            TShirtSize: tShirtSize,
-            TShirtText: role.TShirtText,
-            User: user._id,
-            CanManageSubTeams: role.CanManageSubTeams,
-            CanManageTeam: role.CanManageTeam,
-            CanManageTeamConfiguration: role.CanManageTeamConfiguration
-        });
-        await newProfile.save();
-        var team = await TeamModel.findById(teamID);
-        team.Users.push(newProfile._id);
-        await team.save();
+            await newProfile.save();
+            var team = await TeamModel.findById(teamID);
+            team.Users.push(newProfile._id);
+            await team.save();
+        }    
+    }catch(e){
+        console.log(e);
+        return null;
     }
 }
 async function CheckPermissions(route, userID, teamUUID){

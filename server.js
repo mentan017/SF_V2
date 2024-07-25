@@ -52,7 +52,7 @@ async function checkAuth(req, res, next){
                 res.status(401).clearCookie("SID").redirect('/auth/');
             }
         }else{
-            res.status(401).redirect('/auth/');
+            res.status(307).redirect('/auth/');
         }    
     }catch(e){
         console.log(e);
