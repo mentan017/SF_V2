@@ -1,5 +1,6 @@
 //Import modules
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -126,8 +127,34 @@ router.get('/search', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+router.get('/view/:ID', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        if(user?.CanManageAllUsers){
+            res.status(200).sendFile(`${homeDir}/client/users/user/index.html`);
+        }else{
+            res.status(401).redirect('/');
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
 
 //POST routes
+router.post('/get-user-name', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        if(user){
+            res.status(200).send({Name: user.Name});
+        }else{
+            res.sendStatus(400);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 router.post('/get-user-navigation', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
@@ -355,22 +382,159 @@ router.post('/search', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+router.post('/get-user', checkAuth, async function(req, res, next){
+    try{
+        var loggedUser = await UserModel.findById(req.AuthedUser);
+        if(loggedUser?.CanManageAllUsers){
+            var userID = req.body?.UserID;
+            var user = await UserModel.findById(userID);
+            if(user){
+                var responseUser = await GetUserInfo(user);
+                if(user.Password){
+                    responseUser.Activated = true;
+                }else{
+                    responseUser.Activated = false;
+                }
+                res.status(200).send(responseUser);
+            }else{
+                res.sendStatus(400);
+            }
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/update-user', checkAuth, async function(req, res, next){
+    try{
+        var loggedUser = await UserModel.findById(req.AuthedUser);
+        if(loggedUser?.CanManageAllUsers){
+            var userID = req.body?.UserID;
+            var user = await UserModel.findById(userID);
+            if(user){
+                var request = req.body;
+                if(user.Email != request.Email && (await UserModel.find({Email: request.Email, Nickname: {$ne: user.Nickname}})).length == 0){
+                    user.Email = request.Email;
+                    var profiles = await ProfileModel.find({User: user._id});
+                    for(var i=0; i<profiles.length; i++){
+                        profiles[i].Email = request.Email;
+                        await profiles[i].save();
+                    }
+                }
+                if(user.Nickname != request.Username && (await UserModel.find({Nickname: request.Username, Email: {$ne: user.Email}})).length == 0) user.Nickname = request.Username;
+                if(user.Name != request.Name){
+                    user.Name = request.Name;
+                    var profiles = await ProfileModel.find({User: user._id});
+                    for(var i=0; i<profiles.length; i++){
+                        profiles[i].Name = request.Name;
+                        await profiles[i].save();
+                    }
+                }
+                if(user.TShirtSize != request.TShirtSize){
+                    user.TShirtSize = request.TShirtSize;
+                    var profiles = await ProfileModel.find({User: user._id});
+                    for(var i=0; i<profiles.length; i++){
+                        profiles[i].TShirtSize = request.TShirtSize;
+                        await profiles[i].save();
+                    }
+                }
+                user.Year = request.Year;
+                user.CanAccessMeetings = request.CanAccessMeetings;
+                user.CanAccessTeams = request.CanAccessTeams;
+                user.CanManageAllMeetings = request.CanManageAllMeetings;
+                user.CanManageAllTeams = request.CanManageAllTeams;
+                user.CanManageAllUsers = request.CanManageAllUsers;
+                user.CanManageConfiguration = request.CanManageConfiguration;
+                user.CanUseTools = request.CanUseTools;
+                await user.save();
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/activate', checkAuth, async function(req, res, next){
+    try{
+        var loggedUser = await UserModel.findById(req.AuthedUser);
+        if(loggedUser.CanManageAllUsers){
+            var user = await UserModel.findById(req.body?.UserID);
+            if(user){
+                var newPassword = ((Math.random() + 1).toString(36).substring(2)).toUpperCase();
+                var passwordHash = crypto.createHash('sha256').update(newPassword).digest('hex');
+                var salt = await bcrypt.genSalt(10);
+                var passwordSaltedHash = await bcrypt.hash(passwordHash, salt);
+                user.Password = passwordSaltedHash;
+                await user.save();
+                res.status(200).send({Password: newPassword});
+            }else{
+                res.sendStatus(400);
+            }
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//DELETE route
+router.delete('/delete', checkAuth, async function(req, res, next){
+    try{
+        var loggedUser = await UserModel.findById(req.AuthedUser);
+        if(loggedUser.CanManageAllUsers){
+            var user = await UserModel.findByIdAndDelete(req.body?.UserID);
+            if(user){
+                var cookies = await CookieModel.deleteMany({UserID: user._id});
+                var profiles = await ProfileModel.deleteMany({User: user._id});
+                for(var i=0; i<profiles.length; i++){
+                    var team = await TeamModel.findById(profiles[i].Team);
+                    var users = [];
+                    for(var j=0; j<team.Users.length; j++){
+                        if(team.Users[j] != profiles[i]._id) users.push(team.Users[j]);
+                    }
+                    team.Users = users;
+                    await team.save();
+                }
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 
 async function GetUserInfo(user){
-    var profilesRaw = await ProfileModel.find({User: user._id});
+    var profilesRaw = await ProfileModel.find({User: user._id}, null, {sort: {Team: 1}});
     var profiles = [];
     for(var j=0; j<profilesRaw.length; j++){
         var team = await TeamModel.findById(profilesRaw[j].Team);
         var role = await RoleModel.findById(profilesRaw[j].Role);
         profiles.push({
+            ID: profilesRaw[j]._id,
             TeamName: team?.Name,
             RoleName: role?.Name,
             GetsTShirt: profilesRaw[j].GetsTShirt,
+            TShirtText: profilesRaw[j].TShirtText
         });
     }
     return {
         ID: user._id,
         Name: user.Name,
+        Username: user.Nickname,
         Year: user.Year,
         Email: user.Email,
         TShirtSize: user.TShirtSize,

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/common/reset.css">
+    <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/users/user/style.css">
+    <script type="text/javascript" src="/common/navigation.js" defer></script>
+    <script type="text/javascript" src="/users/user/script.js" defer></script>
+    <title>Springfest Apps</title>
+</head>
+<body>
+    <div id="navigation"></div>
+    <div class="main-content">
+        <div id="header"></div>
+        <div class="subsection-container">
+            <div>
+                <h2>Profiles</h2>
+            </div>
+            <div id="profiles">
+                <div class="template">
+                    <p>Team</p>
+                    <p>Role</p>
+                    <p>T-Shirt Text</p>
+                    <p>Gets T-Shirt</p>
+                </div>
+            </div>
+        </div>
+        <div class="subsection-container">
+            <div>
+                <h2>User Attributes</h2>
+            </div>
+            <div id="attributes-fields" class="inputs-container">
+                <div>
+                    <p>Full Name</p>
+                    <input type="text" placeholder="Full Name" id="name-input">
+                </div>
+                <div>
+                    <p>Email</p>
+                    <input type="text" placeholder="Email" id="email-input">
+                </div>
+                <div>
+                    <p>Username</p>
+                    <input type="text" placeholder="Username" id="username-input">
+                </div>
+                <div>
+                    <p>Year</p>
+                    <input type="text" placeholder="Year" id="year-input">
+                </div>
+                <div>
+                    <p>T-Shirt Size</p>
+                    <input type="text" placeholder="T-Shirt Size" id="tshirtsize-input">
+                </div>
+            </div>
+        </div>
+        <div class="subsection-container">
+            <div>
+                <h2>Permissions</h2>
+            </div>
+            <div id="permissions-fields" class="inputs-container">
+                <div>
+                    <p>Can Access Meetings</p>
+                    <input type="text" placeholder="Choose 'true' or 'false'" id="canaccessmeetings-input">
+                </div>
+                <div>
+                    <p>Can Access Teams</p>
+                    <input type="text" max-length="3" placeholder="Choose 'true' or 'false'" id="canaccessteams-input">
+                </div>
+                <div>
+                    <p>Can Manage All Meetings</p>
+                    <input type="text" max-length="100" placeholder="Choose 'true' or 'false'" id="canmanageallmeetings-input">
+                </div>
+                <div>
+                    <p>Can Manage All Teams</p>
+                    <input type="text" max-length="100" placeholder="Choose 'true' or 'false'" id="canmanageallteams-input">
+                </div>
+                <div>
+                    <p>Can Manage All Users</p>
+                    <input type="text" max-length="100" placeholder="Choose 'true' or 'false'" id="canmanageallusers-input">
+                </div>
+                <div>
+                    <p>Can Manage Configuration</p>
+                    <input type="text" max-length="100" placeholder="Choose 'true' or 'false'" id="canmanageconfiguration-input">
+                </div>
+                <div>
+                    <p>Can Use Tools</p>
+                    <input type="text" max-length="100" placeholder="Choose 'true' or 'false'" id="canusetools-input">
+                </div>
+            </div>
+        </div>
+        <div class="actions-container">
+            <div id="activate-btn">Activate User</div>
+            <div id="remove-btn">Remove User</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -67,7 +67,7 @@ async function UpdateProfile(){
     var canManageTeam = (document.getElementById("canManageTeam-input").value).toLowerCase();
     var canManageTeamConfiguration = (document.getElementById("canManageTeamConfiguration-input").value).toLowerCase();
     var GetsTShirt = (document.getElementById("getstshirt-input").value).toLowerCase();
-    var TShirtSize = (document.getElementById("tshirtsize-input").value);
+    var TShirtSize = (document.getElementById("tshirtsize-input").value).toUpperCase();
     var TShirtText = (document.getElementById("tshirttext-input").value);
     canManageSubTeams = (canManageSubTeams.indexOf('t') != -1 || canManageSubTeams.indexOf('y') != -1) ? (true) : (false);
     canManageTeam = (canManageTeam.indexOf('t') != -1 || canManageTeam.indexOf('y') != -1) ? (true) : (false);

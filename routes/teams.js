@@ -53,7 +53,7 @@ async function checkAuth(req, res, next){
 router.get('/list-teams', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
-        if(user.CanManageAllTeams){
+        if(user.CanManageAllTeams || user.CanAccessTeams){
             res.status(200).sendFile(`${homeDir}/client/team/teams/index.html`);
         }else{
             res.status(401).redirect('/');
@@ -114,7 +114,10 @@ router.post('/list-teams', checkAuth, async function(req, res, next){
         if(user.CanManageAllTeams){
             teams = await TeamModel.find({}, null, {sort: {Name: 1}});
         }else{
-            //TODO go through all the profiles and get the teams from those profiles that can be accessed
+            var profiles = await ProfileModel.find({User: user._id});
+            for(var i=0; i<profiles.length; i++){
+                teams.push(await TeamModel.findById(profiles[i].Team));
+            }
         }
         for(var i=0; i<teams.length; i++){
             response.push({
