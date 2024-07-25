@@ -201,7 +201,7 @@ router.post('/get-users-multiple-teams', checkAuth, async function(req, res, nex
     try{
         var user = await UserModel.findById(req.AuthedUser);
         if(user?.CanManageAllUsers){
-            var usersRaw = await UserModel.find({});
+            var usersRaw = await UserModel.find({}, null, {sort: {Name: 1}});
             var count = 0;
             var users = [];
             for(var i=0; i<usersRaw.length; i++){
@@ -229,7 +229,7 @@ router.post('/get-users-multiple-tshirts', checkAuth, async function(req, res, n
     try{
         var user = await UserModel.findById(req.AuthedUser);
         if(user?.CanManageAllUsers){
-            var usersRaw = await UserModel.find({});
+            var usersRaw = await UserModel.find({}, null, {sort: {Name: 1}});
             var count = 0;
             var users = [];
             for(var i=0; i<usersRaw.length; i++){
@@ -257,7 +257,7 @@ router.post('/get-managers', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
         if(user?.CanManageAllUsers){
-            var usersRaw = await UserModel.find({});
+            var usersRaw = await UserModel.find({}, null, {sort: {Name: 1}});
             var count = 0;
             var users = [];
             for(var i=0; i<usersRaw.length; i++){
@@ -294,20 +294,20 @@ router.post('/get-coaches', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
         if(user?.CanManageAllUsers){
-            var usersRaw = await UserModel.find({});
+            var usersRaw = await UserModel.find({}, null, {sort: {Name: 1}});
             var count = 0;
             var users = [];
             for(var i=0; i<usersRaw.length; i++){
-                var IsManager = false;
+                var IsCoach = false;
                 var profiles = await ProfileModel.find({Email: usersRaw[i].Email});
                 for(var j=0; j<profiles.length; j++){
                     var role = await RoleModel.findById(profiles[j].Role);
                     if(role?.Name == "Coach"){
-                        IsManager = true;
+                        IsCoach = true;
                         j=1000;
                     }
                 }
-                if(IsManager){
+                if(IsCoach){
                     count++;
                     if(req.body?.Output != "count"){
                         users.push(await GetUserInfo(usersRaw[i]));
@@ -319,6 +319,34 @@ router.post('/get-coaches', checkAuth, async function(req, res, next){
             }else{
                 res.status(200).send({users});
             }
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/search', checkAuth, async function(req, res, next){
+    try{
+        var user = await UserModel.findById(req.AuthedUser);
+        if(user?.CanManageAllUsers){
+            var query = req.query.query;
+            var queries = query.split("_");
+            if((typeof queries) == "string") queries = [queries];
+            var usersEmails = [];
+            for(var i=0; i<queries.length; i++){
+                var newUsers = (await UserModel.find({$or: [{Name: {$regex: queries[i], $options: 'i'}}, {Email: {$regex: queries[i], $options: 'i'}}], Email: {$nin: usersEmails}}))
+                for(var j=0; j<newUsers.length; j++){
+                    usersEmails.push(newUsers[j].Email);
+                }
+            }
+            var usersRaw = await UserModel.find({Email: {$in: usersEmails}}, null, {sort: {Name: 1}});
+            var users = [];
+            for(var i=0; i<usersRaw.length; i++){
+                users.push(await GetUserInfo(usersRaw[i]));
+            }
+            res.status(200).send(users);
         }else{
             res.sendStatus(401);
         }
