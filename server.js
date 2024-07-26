@@ -8,6 +8,7 @@ require('dotenv').config();
 
 //Import routes
 const AuthRouter = require('./routes/auth.js');
+const ConfigurationRouter = require('./routes/configuration.js');
 const ProfileRouter = require('./routes/profile.js');
 const RolesRouter = require('./routes/roles.js');
 const TasksRouter = require('./routes/tasks.js');
@@ -64,11 +65,28 @@ async function checkAuth(req, res, next){
 
 //GET routes
 app.get('/', checkAuth, async function(req, res, next){
+    res.status(308).redirect('/dashboard');
+});
+app.get('/dashboard', checkAuth, async function(req, res, next){ //Trying to avoid browser cashing issues
     res.status(200).sendFile(`${homeDir}/client/main/index.html`);
 });
+app.post('/get-springfest-date', checkAuth, async function(req, res, next){
+    try{
+        var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`,'utf-8'));
+        if(config?.SpringfestDate){
+            res.status(200).send({SpringfestDate: config?.SpringfestDate});
+        }else{
+            res.status(200).send({SpringfestDate: 0});
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
 
 //Connect routes
 app.use('/auth', AuthRouter);
+app.use('/configuration', ConfigurationRouter);
 app.use('/profiles', ProfileRouter);
 app.use('/roles', RolesRouter);
 app.use('/tasks', TasksRouter);

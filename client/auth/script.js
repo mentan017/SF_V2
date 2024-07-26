@@ -19,7 +19,7 @@ async function SubmitLogin(){
             body: JSON.stringify({Username: username, Password: password})
         });
         if(response.status == 200){
-            window.location.href = '/';
+            window.location.href = '/dashboard';
         }else if(response.status == 401){
             SetErrorMsg((await response.json()).Error);
         }else{

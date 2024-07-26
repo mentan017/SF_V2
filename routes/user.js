@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const express = require('express');
+const fs = require('fs');
 const mongoose = require('mongoose');
 const path = require('path');
 require('dotenv').config();
@@ -158,13 +159,14 @@ router.post('/get-user-name', checkAuth, async function(req, res, next){
 router.post('/get-user-navigation', checkAuth, async function(req, res, next){
     try{
         var user = await UserModel.findById(req.AuthedUser);
-        var navigation = `<div class="nav-img"><img src="/images/sf24_logo_black_no_bg_256.png" alt="Springfest 2024 logo"></div>
+        var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+        var navigation = `<div class="nav-img"><img src="${config.Logo}_256.${config.LogoExtension}" alt="Springfest 2024 logo"></div>
         <a href="/"><div>Home</div></a>`;
         if(user.CanAccessMeetings || user.CanManageAllMeetings) navigation += `<a href="#"><div>Meetings</div></a>`;
         if(user.CanAccessTeams || user.CanManageAllTeams) navigation += `<a href="/team/list-teams"><div>Teams</div></a>`;
         if(user.CanManageAllUsers) navigation += `<a href="/user/dashboard"><div>Users</div></a>`;
         if(user.CanUseTools) navigation += `<a href="#"><div>Tools</div></a>`;
-        if(user.CanManageConfiguration) navigation += `<a href="#"><div>Configuration</div></a>`;
+        if(user.CanManageConfiguration) navigation += `<a href="/configuration"><div>Configuration</div></a>`;
         navigation += `<a href="#"><div>Help</div></a>`;
         res.status(200).send({Navigation: navigation});
     }catch(e){

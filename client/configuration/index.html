@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/common/reset.css">
+    <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/configuration/style.css">
+    <script type="text/javascript" src="/common/navigation.js" defer></script>
+    <script type="text/javascript" src="/configuration/script.js" defer></script>
+    <title>Springfest Apps | Configuration</title>
+</head>
+<body>
+    <div id="navigation"></div>
+    <div class="main-content">
+        <div id="header">
+            <h1>Configuration</h1>
+        </div>
+        <div class="subsection-container">
+            <div>
+                <h2>Date</h2>
+            </div>
+            <div id="date-fields">
+                <div class="template">
+                    <p>Field</p>
+                    <p>Date</p>
+                </div>
+                <div class="date">
+                    <p>Springfest day</p>
+                    <input type="date" id="springfestdate-input">
+                </div>
+            </div>
+        </div>
+        <div class="subsection-container">
+            <div>
+                <h2>Files</h2>
+            </div>
+            <div id="files-fields">
+                <div class="template">
+                    <p>Field</p>
+                    <p>File</p>
+                    <p>Upload Button</p>
+                    <p>View Button</p>
+                </div>
+                <div class="file">
+                    <p>Logo</p>
+                    <input type="file" id="logo-input">
+                    <div class="upload-btn">Upload</div>
+                    <div class="view-btn">View</div>
+                </div>
+                <div class="file">
+                    <p>Students File</p>
+                    <input type="file" id="students-input">
+                    <div class="upload-btn">Upload</div>
+                    <div class="view-btn">View</div>
+                </div>
+                <div class="file">
+                    <p>Teachers File</p>
+                    <input type="file" id="teachers-input">
+                    <div class="upload-btn">Upload</div>
+                    <div class="view-btn">View</div>
+                </div>
+            </div>
+        </div>
+        <div id="reset-btn">RESET ALL</div>
+    </div>
+</body>
+</html>

@@ -1,4 +1,6 @@
 resources
 .env
+config.json
 cert
 node_modules
+client/images/*

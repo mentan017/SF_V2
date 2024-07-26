@@ -105,6 +105,7 @@ async function RemoveUser(){
 
 async function DisplayData(user){
     Name = user.Name;
+    document.title = `Springfest Apps | ${user.Name}`;
     await RemoveEventListeners();
     if(user.Activated){
         document.getElementById("activate-btn").style.backgroundColor = 'grey';

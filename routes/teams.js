@@ -375,8 +375,13 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
         if(!(await ProfileModel.findOne({Team: teamID, Email: email}))){
             if(!(await UserModel.findOne({Email: email}))){
                 //Create a new user and profile
-                var allTeachers = (fs.existsSync(`${homeDir}/resources/${process.env.TEACHERSFILE}`)) ? (await csv().fromFile(`${homeDir}/resources/${process.env.TEACHERSFILE}`)) : ([]);
-                var allStudents = (fs.existsSync(`${homeDir}/resources/${process.env.STUDENTSFILE}`)) ? (await csv().fromFile(`${homeDir}/resources/${process.env.STUDENTSFILE}`)) : ([]);
+                var config = {
+                    StudentsFile: "students",
+                    TeachersFile: "teachers"
+                };
+                if(fs.existsSync(`${homeDir}/config.json`)) config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`));
+                var allTeachers = (fs.existsSync(`${homeDir}/resources/${config.TeachersFile}`)) ? (await csv().fromFile(`${homeDir}/resources/${config.TeachersFile}`)) : ([]);
+                var allStudents = (fs.existsSync(`${homeDir}/resources/${config.StudentsFile}`)) ? (await csv().fromFile(`${homeDir}/resources/${config.StudentsFile}`)) : ([]);
                 var allSchool = [];
                 for(var i=0; i<allStudents.length; i++){
                     allSchool.push({

@@ -8,8 +8,8 @@ document.getElementById("new-task").addEventListener("click", function(e){
 
 async function GetData(){
     await GetUserName();
+    await GetSpringfestDate();
     GetTasks();
-    DisplayCountdown();
 }
 
 async function GetUserName(){
@@ -20,6 +20,13 @@ async function GetUserName(){
         window.alert("An error occured in the servers, please try again later.");
     }else{
         window.location.href = '/auth/logout';
+    }
+}
+async function GetSpringfestDate(){
+    var response = await fetch('/get-springfest-date', {method: "POST"});
+    if(response.status == 200){
+        SpringfestDate.setTime((await response.json()).SpringfestDate);
+        DisplayCountdown();
     }
 }
 async function GetTasks(){
