@@ -279,6 +279,26 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
                 TeachersFile: ''
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
+            var password = crypto.createHash('sha256').update('test').digest('hex');
+            var salt = await bcrypt.genSalt(10);
+            var passwordHash = await bcrypt.hash(password, salt);
+            var admin = new UserModel({
+                Name: 'Admin',
+                Email: 'admin@springfest.eu',
+                Nickname: 'admin',
+                Password: passwordHash,
+                Year: 'System',
+                CanAccessMeetings: true,
+                CanAccessTeams: true,
+                CanManageAllMeetings: true,
+                CanManageAllTeams: true,
+                CanManageAllUsers: true,
+                CanManageConfiguration: true,
+                CanUseTools: true
+            });
+            await admin.save();
+            console.log('[INFO] Admin created successfully');
+            res.sendStatus(200);
         }else{
             res.sendStatus(400);
         }

@@ -6,6 +6,7 @@ function InitPage(){
         uploadBtns[i].addEventListener("click", UploadFile);
     }
     document.getElementById("reset-btn").addEventListener("click", ConfirmReset);
+    document.getElementById("confirm-reset").addEventListener("click", ResetAll);
     GetConfig();
 }
 
@@ -59,7 +60,7 @@ async function ResetAll(){
     var password = document.getElementById("password-input").value;
     password = await hashValue(password);
     var response = await fetch('/configuration/reset-all', {
-        method: "POST",
+        method: "DELETE",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({Password: password})
     });
