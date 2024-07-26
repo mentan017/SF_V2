@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "App_Start": "nodemon --ignore ./config.json server.js",
+    "App_Start": "nodemon --ignore ./config.json --ignore ./data/* server.js",
     "Start_App": "nodemon server.js"
   },
   "keywords": [],

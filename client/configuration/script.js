@@ -5,6 +5,7 @@ function InitPage(){
     for(var i=0; i<uploadBtns.length; i++){
         uploadBtns[i].addEventListener("click", UploadFile);
     }
+    document.getElementById("reset-btn").addEventListener("click", ConfirmReset);
     GetConfig();
 }
 
@@ -53,7 +54,22 @@ async function UploadFile(){
         document.getElementById(`${targetRoutes[i]}-input`).value = '';
     }
     GetConfig();
-
+}
+async function ResetAll(){
+    var password = document.getElementById("password-input").value;
+    password = await hashValue(password);
+    var response = await fetch('/configuration/reset-all', {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({Password: password})
+    });
+    if(response.status == 200){
+        window.location.href = "/";
+    }else if(response.status == 400){
+        document.getElementById("error").innerText = "The password is wrong";
+    }else{
+        window.alert("An error occured in the servers, please try again later.");
+    }
 }
 function DisplayConfig(config){
     DateEventListner('remove');
@@ -66,4 +82,14 @@ function DateEventListner(mode){
     }else{
         document.getElementById("springfestdate-input").removeEventListener("change", UpdateConfig);
     }
+}
+function ConfirmReset(){
+    document.getElementById("reset-super-container").style.display = "grid";
+}
+async function hashValue(variable){
+    var varUint8 = new TextEncoder().encode(variable);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', varUint8);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    var hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return(hashHex);
 }

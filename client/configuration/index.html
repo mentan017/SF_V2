@@ -46,23 +46,36 @@
                     <p>Logo</p>
                     <input type="file" id="logo-input">
                     <div class="upload-btn">Upload</div>
-                    <div class="view-btn">View</div>
+                    <a class="view-btn" target="_blank" href="/configuration/view/logo">View</a>
                 </div>
                 <div class="file">
                     <p>Students File</p>
                     <input type="file" id="students-input">
                     <div class="upload-btn">Upload</div>
-                    <div class="view-btn">View</div>
+                    <a class="view-btn" target="_blank" href="/configuration/view/students">View</a>
                 </div>
                 <div class="file">
                     <p>Teachers File</p>
                     <input type="file" id="teachers-input">
                     <div class="upload-btn">Upload</div>
-                    <div class="view-btn">View</div>
+                    <a class="view-btn" target="_blank" href="/configuration/view/teachers">View</a>
                 </div>
             </div>
         </div>
-        <div id="reset-btn">RESET ALL</div>
+        <div class="actions-container">
+            <a target="_blank" href="/configuration/export"><div id="export-btn">Export All</div></a>
+            <div id="reset-btn">RESET ALL</div>
+        </div>
+    </div>
+    <div id="reset-super-container" style="display: none;">
+        <div class="reset-container">
+            <h3>Confirmation of the reset</h3>
+            <p>This will reset all the database, make sure you <a target="_blank" href="/configuration/export">export it</a> and save it before reseting it.</p>
+            <p>To confirm the reset, please enter your password below</p>
+            <p id="error"></p>
+            <input type="password" placeholder="Password" id="password-input">
+            <div id="confirm-reset">RESET ALL</div>
+        </div>
     </div>
 </body>
 </html>
