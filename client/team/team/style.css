@@ -188,3 +188,13 @@ h2{
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+#delete-btn{
+    background-color: red;
+    color: #ffffff;
+    font-size: 2rem;
+    width: max-content;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    margin: auto;
+    cursor: pointer;
+}

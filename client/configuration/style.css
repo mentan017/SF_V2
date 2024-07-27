@@ -22,7 +22,7 @@ h2{
     font-size: 3rem;
     padding: 1rem;
 }
-.template, .date, .file{
+.template, .date, .file, .team{
     color: black;
     font-size: 1.5rem;
     justify-content: center;
@@ -38,10 +38,15 @@ h2{
 #files-fields > div{
     grid-template-columns: 1fr 2fr 1fr 1fr;
 }
+#teams > div{
+    grid-template-columns: 1fr 3fr 1fr 1fr;
+}
 .template{
     border-top: black solid 2px;
 }
-.template *, .date *, .file *{
+.template *, .date *, .file *, .team *{
+    text-decoration: none;
+    color: black;
     padding: 0.3rem 0.5rem;
     border-left: solid 1px black;
     border-right: solid 1px black;
@@ -124,4 +129,8 @@ h3{
     font-size: 1rem;
     color: red;
     padding: 0;
+}
+.mvt-btn{
+    text-align: center;
+    cursor: pointer;
 }

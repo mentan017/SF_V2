@@ -246,6 +246,9 @@ router.put('/create-team', checkAuth, async function(req, res, next){
                 Roles: roles
             });
             await team.save();
+            var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+            config.TeamPriorities.push(team.UUID);
+            fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
             res.status(200).send({UUID: team.UUID});
             UpdateRoles(roles, team._id, team.Name);
         }else{
@@ -307,6 +310,34 @@ router.put('/upload-batch-users/:teamUUID', checkAuth, async function(req, res, 
                     res.sendStatus(200);
                 }
             });    
+        }else{
+            res.sendStatus(401);
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//DELETE routes
+router.delete('/delete/:teamUUID', checkAuth, async function(req, res, next){
+    try{
+        if(CheckPermissions('delete', req.AuthedUser, req.params?.teamUUID)){
+            var team = await TeamModel.findOneAndDelete({UUID: req.params?.teamUUID});
+            if(team){
+                var profiles = await ProfileModel.deleteMany({Team: team._id});
+                var roles = await RoleModel.deleteMany({Team: team._id});
+                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+                var TeamPriorities = [];
+                for(var i=0; i<config.TeamPriorities.length; i++){
+                    if(config.TeamPriorities[i] != req.params?.teamUUID) TeamPriorities.push(config.TeamPriorities[i]);
+                }
+                config.TeamPriorities = TeamPriorities;
+                fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
+            }
         }else{
             res.sendStatus(401);
         }
@@ -463,7 +494,8 @@ async function CheckPermissions(route, userID, teamUUID){
         {Route: 'update-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
         {Route: 'update-configuration', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
         {Route: 'upload-individual-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'upload-batch-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']}
+        {Route: 'upload-batch-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+        {Route: 'delete', RequireOne: ['CanManageAllTeams']}
     ];
     var AllowAccess = false;
     var team = await TeamModel.findOne({UUID: teamUUID});

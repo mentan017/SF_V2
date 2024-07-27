@@ -76,6 +76,59 @@ function DisplayConfig(config){
     DateEventListner('remove');
     if(config.SpringfestDate != 0) document.getElementById("springfestdate-input").valueAsNumber = config.SpringfestDate;
     DateEventListner('add');
+    document.getElementById("teams").innerHTML = `<div class="template"><p>Position</p><p>Team Name</p><p>Move Up</p><p>Move Down</p></div>`;
+    for(var i=0; i<config.TeamPriorities.length; i++){
+        document.getElementById("teams").innerHTML += `
+        <div class="team" data-uuid="${config.TeamPriorities[i]}">
+            <p>${i+1}</p>
+            <a href="/team/team/${config.TeamPriorities[i]}">${config.Teams[i]}</a>
+            <p class="mvt-btn" data-mvt="1">Up &uarr;</p>
+            <p class="mvt-btn" data-mvt="-1">Down &darr;</p>
+        </div>`;
+    }
+    var mvtBtns = document.getElementsByClassName("mvt-btn");
+    for(var i=0; i<mvtBtns.length; i++){
+        mvtBtns[i].addEventListener("click", function(e){
+            var teamUUID = this.parentElement.getAttribute("data-uuid");
+            var mvt = parseInt(this.getAttribute("data-mvt"));
+            MoveTeam(teamUUID, mvt);
+        });
+    }
+}
+async function MoveTeam(team, mvt){
+    var teams = document.getElementsByClassName("team");
+    var teamsUUID = [];
+    for(var i=0; i<teams.length-1; i++){
+        var currentUUID = teams[i].getAttribute("data-uuid");
+        var nextUUID = teams[(i+1)%teams.length].getAttribute("data-uuid");
+        if(mvt == 1){
+            if(nextUUID == team){
+                teamsUUID.push(nextUUID);
+                i++;
+                didMvt = true;
+            }
+            teamsUUID.push(currentUUID);
+        }else{
+            if(currentUUID == team){
+                teamsUUID.push(nextUUID);
+                i++;
+            }
+            teamsUUID.push(currentUUID);
+        }
+    }
+    if(teamsUUID.length != teams.length){
+        teamsUUID.push(teams[teams.length-1].getAttribute("data-uuid"));
+    }
+    var response = await fetch('/configuration/update-teams-priorities', {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({NewOrder: teamsUUID})
+    });
+    if(response.status == 200){
+        GetConfig();
+    }else{
+        window.alert("An error occured in the servers, please try again later.");
+    }
 }
 function DateEventListner(mode){
     if(mode == 'add'){

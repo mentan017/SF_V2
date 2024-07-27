@@ -33,6 +33,16 @@ async function CreateAdmin(){
     });
     await admin.save();
     console.log('[INFO] Admin created successfully');
+    var config = {
+        SpringfestDate: 0, //Time in milliseconds
+        Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
+        LogoExtension: 'png',
+        StudentsFile: '',
+        TeachersFile: '',
+        TeamPriorities: []
+    }
+    fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
+    console.log("[INFO] Default configuration created successfully");
     return 0;
 }
 

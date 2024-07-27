@@ -123,15 +123,22 @@ router.get('/export', checkAuth, async function(req, res, next){
 router.post('/get-config', checkAuth, async function(req, res, next){
     try{
         if(fs.existsSync(`${homeDir}/config.json`)){
-            var config = fs.readFileSync(`${homeDir}/config.json`, 'utf-8');
-            res.status(200).send(JSON.parse(config));
+            var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+            var Teams = [];
+            for(var i=0; i<config.TeamPriorities.length; i++){
+                var team = await TeamModel.findOne({UUID: config.TeamPriorities[i]});
+                Teams.push(team.Name);
+            }
+            config.Teams = Teams;
+            res.status(200).send(config);
         }else{
             var config = {
                 SpringfestDate: 0, //Time in milliseconds
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
                 StudentsFile: '',
-                TeachersFile: ''
+                TeachersFile: '',
+                TeamPriorities: []
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
             res.status(200).send(config);
@@ -207,7 +214,7 @@ router.put('/upload-students-file', checkAuth, async function(req, res, next){
                 console.log(err);
                 res.sendStatus(500);
             }else{
-                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`));
+                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
                 if(files.files[0].mimetype == "text/csv"){
                     var UUID = uuidv4();
                     fs.copyFileSync(files.files[0].filepath, `${homeDir}/resources/STUDENTS_FILE_${UUID}.csv`);
@@ -233,7 +240,7 @@ router.put('/upload-teachers-file', checkAuth, async function(req, res, next){
                 console.log(err);
                 res.sendStatus(500);
             }else{
-                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`));
+                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
                 if(files.files[0].mimetype == "text/csv"){
                     var UUID = uuidv4();
                     fs.copyFileSync(files.files[0].filepath, `${homeDir}/resources/TEACHERS_FILE_${UUID}.csv`);
@@ -245,6 +252,17 @@ router.put('/upload-teachers-file', checkAuth, async function(req, res, next){
                 }
             }
         });
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/update-teams-priorities', checkAuth, async function(req, res, next){
+    try{
+        var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+        config.TeamPriorities = req.body?.NewOrder || config.TeamPriorities;
+        fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
+        res.sendStatus(200);
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -276,7 +294,8 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
                 StudentsFile: '',
-                TeachersFile: ''
+                TeachersFile: '',
+                TeamPriorities: []
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
             var password = crypto.createHash('sha256').update('test').digest('hex');

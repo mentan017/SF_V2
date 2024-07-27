@@ -1,4 +1,5 @@
 var UserRoles = [];
+var TeamName = "";
 
 window.onload = GetTeamInfo();
 
@@ -17,6 +18,7 @@ document.getElementById("close-roles-btn").addEventListener("click", function(e)
 document.getElementById("submit-bulk-users").addEventListener("click", AddBatchUsers);
 document.getElementById("submit-individual-user").addEventListener("click", AddIndividualUser);
 document.getElementById("submit-new-role").addEventListener("click", AddNewRole);
+document.getElementById("delete-btn").addEventListener("click", DeleteTeam);
 
 async function AddIndividualUser(){
     var URL = (document.location.href).split("#").join("").split("/");
@@ -100,6 +102,7 @@ async function GetTeamInfo(){
     });
     if(response.status == 200){
         var responseData = await response.json();
+        TeamName = responseData.TeamName;
         document.getElementById("header").innerHTML = `<div><input type="text" value="${responseData.TeamName}" id="teamname-input"></div>`;
         document.title = `Springfest Apps | ${responseData.TeamName}`;
         document.getElementById("tshirt-color-name-input").value = responseData.TShirtColorName || "";
@@ -142,6 +145,18 @@ async function GetUsers(){
         UpdateUsers(responseData);
     }else{
         window.alert("An error occured in the servers, please try again later.");
+    }
+}
+async function DeleteTeam(){
+    var URL = (document.location.href).split("#").join("").split("/");
+    var teamUUID = URL[URL.length - 1];
+    if(window.confirm(`Do you really want to delete the team: ${TeamName}?`)){
+        var response = await fetch(`/team/delete/${teamUUID}`, {method: "DELETE"});
+        if(response.status == 200){
+            window.location.href = "/team/list-teams";
+        }else{
+            window.alert("An error occured in the servers, please try again later.");
+        }
     }
 }
 function ClearErrors(){
