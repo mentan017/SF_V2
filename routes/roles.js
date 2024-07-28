@@ -122,7 +122,7 @@ router.post('/update-role', checkAuth, async function(req, res, next){
                         if(GetsTShirt){
                             for(var j=0; j<otherProfiles.length; j++){
                                 otherProfiles[j].GetsTShirt = false;
-                                await otherProfiles[i].save();
+                                await otherProfiles[j].save();
                             }
                         }
                     }

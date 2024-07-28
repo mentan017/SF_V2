@@ -37,8 +37,8 @@ async function CreateAdmin(){
         SpringfestDate: 0, //Time in milliseconds
         Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
         LogoExtension: 'png',
-        StudentsFile: '',
-        TeachersFile: '',
+        StudentsFile: 'students',
+        TeachersFile: 'teachers',
         TeamPriorities: []
     }
     fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));

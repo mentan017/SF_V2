@@ -13,6 +13,7 @@ const ProfileRouter = require('./routes/profile.js');
 const RolesRouter = require('./routes/roles.js');
 const TasksRouter = require('./routes/tasks.js');
 const TeamRouter = require('./routes/teams.js');
+const ToolsRouter = require('./routes/tools.js');
 const UserRouter = require('./routes/user.js');
 
 //Import MongoDB models
@@ -91,6 +92,7 @@ app.use('/profiles', ProfileRouter);
 app.use('/roles', RolesRouter);
 app.use('/tasks', TasksRouter);
 app.use('/team', TeamRouter);
+app.use('/tool', ToolsRouter);
 app.use('/user', UserRouter);
 
 //Start server

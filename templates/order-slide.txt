@@ -1,0 +1,30 @@
+\begin{frame}
+    
+\frametitle{\textbf{ {{teamName}} : "{{text}}" }}
+
+\begin{columns}[T]
+
+\begin{column}{0.40\textwidth}
+
+\textbf{Color:} {{colorName}}\\
+\textbf{Back Text:} {{text}}\\
+\textbf{Amount:} \\
+\begin{itemize}
+\item[-] XXS: {{XXS}}
+\item[-] XS: {{XS}}
+\item[-] S: {{S}}
+\item[-] M: {{M}}
+\item[-] L: {{L}}
+\item[-] XL: {{XL}}
+\item[-] XXL: {{XXL}}
+\end{itemize}
+
+\end{column}
+
+\begin{column}{0.50\textwidth}
+\includegraphics[width=\textwidth]{ {{TShirtFile}} }
+\end{column}
+
+\end{columns}
+
+\end{frame}

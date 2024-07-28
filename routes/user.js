@@ -165,7 +165,7 @@ router.post('/get-user-navigation', checkAuth, async function(req, res, next){
         if(user.CanAccessMeetings || user.CanManageAllMeetings) navigation += `<a href="#"><div>Meetings</div></a>`;
         if(user.CanAccessTeams || user.CanManageAllTeams) navigation += `<a href="/team/list-teams"><div>Teams</div></a>`;
         if(user.CanManageAllUsers) navigation += `<a href="/user/dashboard"><div>Users</div></a>`;
-        if(user.CanUseTools) navigation += `<a href="#"><div>Tools</div></a>`;
+        if(user.CanUseTools) navigation += `<a href="/tools"><div>Tools</div></a>`;
         if(user.CanManageConfiguration) navigation += `<a href="/configuration"><div>Configuration</div></a>`;
         navigation += `<a href="#"><div>Help</div></a>`;
         res.status(200).send({Navigation: navigation});

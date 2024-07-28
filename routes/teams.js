@@ -217,7 +217,8 @@ router.post('/update-configuration', checkAuth, async function(req, res, next){
             if(team){
                 team.Name = req.body?.TeamName;
                 team.TShirtColorName = req.body?.TShirtColorName;
-                team.TShirtColorHEX = (req.body?.TShirtColorHEX).toUpperCase();
+                if((req.body?.TShirtColorHEX).length == 6) req.body.TShirtColorHEX = `#${req.body.TShirtColorHEX}`;
+                if(/^#[0-9A-F]{6}$/i.test(req.body?.TShirtColorHEX)) team.TShirtColorHEX = (req.body?.TShirtColorHEX).toUpperCase();
                 await team.save();
                 UpdateRoles(team.Roles, team._id, req.body?.TeamName);
                 res.sendStatus(200);
@@ -487,32 +488,37 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
     }
 }
 async function CheckPermissions(route, userID, teamUUID){
-    var routesConfiguration = [
-        {Route: 'list-roles', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'list-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'team-info', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
-        {Route: 'update-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'update-configuration', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
-        {Route: 'upload-individual-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'upload-batch-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
-        {Route: 'delete', RequireOne: ['CanManageAllTeams']}
-    ];
-    var AllowAccess = false;
-    var team = await TeamModel.findOne({UUID: teamUUID});
-    var profile = await ProfileModel.findOne({Team: team._id, User: userID});
-    var user = await UserModel.findById(userID);
-    for(var i=0; i<routesConfiguration.length; i++){
-        if(route == routesConfiguration[i].Route){
-            for(var j=0; j<routesConfiguration[i].RequireOne.length; j++){
-                if(profile){
-                    if(user[routesConfiguration[i].RequireOne[j]] || profile[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
-                }else{
-                    if(user[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+    try{
+        var routesConfiguration = [
+            {Route: 'list-roles', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+            {Route: 'list-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+            {Route: 'team-info', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
+            {Route: 'update-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+            {Route: 'update-configuration', RequireOne: ['CanManageTeam', 'CanManageTeamConfiguration', 'CanManageAllTeams']},
+            {Route: 'upload-individual-user', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+            {Route: 'upload-batch-users', RequireOne: ['CanManageTeam', 'CanManageAllTeams']},
+            {Route: 'delete', RequireOne: ['CanManageAllTeams']}
+        ];
+        var AllowAccess = false;
+        var team = await TeamModel.findOne({UUID: teamUUID});
+        var profile = await ProfileModel.findOne({Team: team._id, User: userID});
+        var user = await UserModel.findById(userID);
+        for(var i=0; i<routesConfiguration.length; i++){
+            if(route == routesConfiguration[i].Route){
+                for(var j=0; j<routesConfiguration[i].RequireOne.length; j++){
+                    if(profile){
+                        if(user[routesConfiguration[i].RequireOne[j]] || profile[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                    }else{
+                        if(user[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                    }
                 }
             }
         }
+        return AllowAccess;    
+    }catch(e){
+        console.log(e);
+        return 0;
     }
-    return AllowAccess;
 }
 
 //Export router

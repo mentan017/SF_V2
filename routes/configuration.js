@@ -7,7 +7,7 @@ const formidable = require('formidable');
 const im = require('imagemagick');
 const mongoose = require('mongoose');
 const path = require('path');
-const { execSync, exec } = require('child_process');
+const { execSync } = require('child_process');
 const {v4: uuidv4} = require('uuid');
 require('dotenv').config();
 
@@ -136,8 +136,8 @@ router.post('/get-config', checkAuth, async function(req, res, next){
                 SpringfestDate: 0, //Time in milliseconds
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
-                StudentsFile: '',
-                TeachersFile: '',
+                StudentsFile: 'students',
+                TeachersFile: 'teachers',
                 TeamPriorities: []
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
@@ -187,6 +187,7 @@ router.put('/upload-logo-file', checkAuth, async function(req, res, next){
                             console.log(err);
                             throw err;
                         }
+                        im.convert([`${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}.${logoExtension}`, '-resize', `40x${(features.height*40)/features.width}`, `${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}_40.${logoExtension}`], function(err, stdout){if(err) throw err;});
                         im.convert([`${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}.${logoExtension}`, '-resize', `64x${(features.height*64)/features.width}`, `${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}_64.${logoExtension}`], function(err, stdout){if(err) throw err;});
                         im.convert([`${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}.${logoExtension}`, '-resize', `128x${(features.height*128)/features.width}`, `${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}_128.${logoExtension}`], function(err, stdout){if(err) throw err;});
                         im.convert([`${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}.${logoExtension}`, '-resize', `256x${(features.height*256)/features.width}`, `${homeDir}/client/images/sf${SFDate.getUTCFullYear()}_logo_${newFilepath}_256.${logoExtension}`], function(err, stdout){if(err) throw err;});
@@ -293,8 +294,8 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
                 SpringfestDate: 0, //Time in milliseconds
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
-                StudentsFile: '',
-                TeachersFile: '',
+                StudentsFile: 'students',
+                TeachersFile: 'teachers',
                 TeamPriorities: []
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
