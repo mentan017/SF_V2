@@ -265,7 +265,7 @@ router.put('/upload-individual-user/:teamUUID', checkAuth, async function(req, r
         if(CheckPermissions('upload-individual-user', req.AuthedUser, req.params?.teamUUID)){
             var team = await TeamModel.findOne({UUID: req.params?.teamUUID});
             if(team){
-                AddTeamUser(team._id, req.body.Email, req.body.TShirtSize, req.body.Role);
+                await AddTeamUser(team._id, req.body.Email, req.body.TShirtSize, req.body.Role);
                 res.sendStatus(200);
             }else{
                 res.sendStatus(400);
@@ -376,7 +376,8 @@ async function UpdateRoles(roles, teamId, teamName){
         var role = await RoleModel.findById(roles[i]);
         role.Team = teamId;
         var oldText = role.TShirtText;
-        role.TShirtText = `${teamName} ${role.Name}`;
+        role.TShirtText = `${teamName}`;
+        if(role.Name != "Member") role.TShirtText = `${teamName} ${role.Name}`;
         await role.save();
         var profiles = await ProfileModel.find({Role: roles[i]});
         for(var j=0; j<profiles.length; j++){
@@ -481,6 +482,7 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
             var team = await TeamModel.findById(teamID);
             team.Users.push(newProfile._id);
             await team.save();
+            return 1;
         }    
     }catch(e){
         console.log(e);

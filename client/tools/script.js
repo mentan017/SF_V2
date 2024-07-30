@@ -32,6 +32,7 @@ async function CreateTShirtOrder(){
         fetch('/tool/create-tshirt-order', {method: "POST"}).then(async function(response){
             if(response.status == 200){
                 CanCreateTShirtOrder = true;
+                window.open(`/tool/download/${(await response.json()).File}`, "_blank");
             }else{
                 window.alert("An error occured in the servers, please try again later.");
             }

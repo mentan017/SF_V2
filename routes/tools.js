@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const { execSync } = require('child_process');
 const {v4: uuidv4} = require('uuid');
+const { default: writeXlsxFile } = require('write-excel-file/node');
 require('dotenv').config();
 
 //Import MongoDB models
@@ -60,6 +61,14 @@ async function checkAuth(req, res, next){
 router.get('/', checkAuth, async function(req, res, next){
     try{
         res.status(200).sendFile(`${homeDir}/client/tools/index.html`);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.get('/download/:file', checkAuth, async function(req, res, next){
+    try{
+        res.status(200).download(`${homeDir}/data/${req.params.file}`);
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -151,11 +160,16 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
             var rgb = [((bigint >> 16) & 255), ((bigint >> 8) & 255), (bigint & 255)];
             var brightness = Math.round(((parseInt(rgb[0]) * 299) + (parseInt(rgb[1]) * 587) + (parseInt(rgb[2]) * 114)) / 1000);
             var textColor = (brightness > 125) ? 'black' : 'white';
+            var logo = config.Logo;
+            if(textColor == "white"){
+                execSync(`magick ${homeDir}/client${config.Logo}_40.${config.LogoExtension} -channel RGB -negate ${homeDir}/client${config.Logo}_inverted_40.${config.LogoExtension}`);
+                logo = `${logo}_inverted`;
+            }
             //Create the presentation
             execSync(`magick -size 626x417 xc:${tshirts[i].ColorHEX} ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png`);
             execSync(`magick -gravity center -background none -fill ${textColor} -size 150x80 caption:"${tshirts[i].Text}" ${homeDir}/data/tshirt-order-${orderUUID}/temp.png`);
             execSync(`magick composite -geometry +0+0 ${homeDir}/templates/t-shirt-template.png ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png`);
-            execSync(`magick composite -geometry +190+135 ${homeDir}/client${config.Logo}_40.${config.LogoExtension} ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png`);
+            execSync(`magick composite -geometry +190+135 ${homeDir}/client${logo}_40.${config.LogoExtension} ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png`);
             execSync(`magick composite -geometry +390+120 ${homeDir}/data/tshirt-order-${orderUUID}/temp.png ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png ${homeDir}/data/tshirt-order-${orderUUID}/images/t-shirt-${tshirts[i].UUID}.png`);
             execSync(`rm ${homeDir}/data/tshirt-order-${orderUUID}/${tshirts[i].Color.split(" ").join("")}.png ${homeDir}/data/tshirt-order-${orderUUID}/temp.png`);
             slides.push(slideTemplate({
@@ -193,7 +207,66 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
         fs.writeFileSync(`${homeDir}/data/tshirt-order-${orderUUID}/presentation.tex`, presentation);
         execSync(`cd ${homeDir}/data/tshirt-order-${orderUUID}; pdflatex presentation.tex; mv presentation.tex T_Shirt_Order_Springfest.tex; mv presentation.pdf T_Shirt_Order_Springfest.pdf; rm presentation.*`);
         //TODO T-Shirt Excel (for distribution)
-        res.sendStatus(200);
+        //Get the users who don't have a t-shirt but get a bracelet
+        var braceletUsers = await ProfileModel.find({GetsTShirt: false, User: {$nin: usersCheck}});
+        var braceletCheck = [];
+        for(var i=0; i<braceletUsers.length; i++){
+            var userIndex = braceletCheck.indexOf(braceletUsers[i].User);
+            if(userIndex == -1){
+                braceletCheck.push(braceletUsers[i].User);
+                users.push({
+                    Name: braceletUsers[i].Name,
+                    Email: braceletUsers[i].Email,
+                    Year: (await UserModel.findById(braceletUsers[i].User)).Year,
+                    TShirts: [{
+                        Team: braceletUsers[i].Team,
+                        Role: (await RoleModel.findById(braceletUsers[i].Role)).Name,
+                        Text: "[No T-Shirt]",
+                        TShirtSize: "/"
+                    }]
+                });
+            }
+        }
+        var teamSheets = [];
+        var sheetNames = [];
+        var teamsCheck = [];
+        var teamIndex = 0;
+        var currentInputs = [];
+        var row = [];
+        for(var i=0; i<users.length; i++){
+            for(var j=0; j<users[i].TShirts.length; j++){
+                teamIndex = teamsCheck.indexOf((users[i].TShirts[j].Team).toString());
+                if(teamIndex == -1){
+                    teamsCheck.push((users[i].TShirts[j].Team).toString());
+                    sheetNames.push((await TeamModel.findById(users[i].TShirts[j].Team)).Name.split("&").join("and"));
+                    teamSheets.push([]); //Creating a new Sheet
+                    teamIndex = teamsCheck.length - 1;
+                    currentInputs = ['Name', 'Year', 'Email', 'Role', 'T-Shirt Text', 'T-Shirt Size', 'Has Bracelet'];
+                    row = [];
+                    for(var k=0; k<currentInputs.length; k++){
+                        row.push({
+                            type: String,
+                            value: currentInputs[k]
+                        });
+                    }
+                    teamSheets[teamIndex].push(row);
+                }
+                currentInputs = [users[i].Name, users[i].Year, users[i].Email, users[i].TShirts[j].Role, users[i].TShirts[j].Text, users[i].TShirts[j].TShirtSize];
+                row = [];
+                for(var k=0; k<currentInputs.length; k++){
+                    row.push({
+                        value: currentInputs[k]
+                    });
+                }
+                teamSheets[teamIndex].push(row);
+            }
+        }
+        await writeXlsxFile(teamSheets, {
+            sheets: sheetNames,
+            filePath: `${homeDir}/data/tshirt-order-${orderUUID}/TShirt_Distribution.xlsx`
+        });
+        execSync(`cd ${homeDir}/data; zip -r TShirt_Order_${orderUUID}.zip ./tshirt-order-${orderUUID}; rm -rf ./tshirt-order-${orderUUID}`);
+        res.status(200).send({File: `TShirt_Order_${orderUUID}.zip`});
     }catch(e){
         console.log(e);
         res.sendStatus(500);
