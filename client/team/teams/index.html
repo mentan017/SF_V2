@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/common/reset.css">
     <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/common/body.css">
     <link rel="stylesheet" href="/team/teams/style.css">
     <script type="text/javascript" src="/common/navigation.js" defer></script>
     <script type="text/javascript" src="/team/teams/script.js" defer></script>
@@ -13,11 +14,11 @@
 <body>
     <div id="navigation"></div>
     <div class="main-content">
-        <div id="header"></div>
+        <div id="header-container"></div>
         <div class="subsection-container">
             <h2>Teams</h2>
-            <div id="teams">
-                <div class="team-template">
+            <div id="teams" class="subsection-elements">
+                <div class="template">
                     <p>Team Name</p>
                     <p>Managers</p>
                     <p>Coaches</p>
@@ -26,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div id="create-team-form-super-container" style="display: none;">
+    <div id="create-team-form-super-container" class="super-container" style="display: none;">
         <div class="create-team-form-container">
             <p>Create a new team</p>
             <p class="input-label">Team Name:</p>

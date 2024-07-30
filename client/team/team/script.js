@@ -103,7 +103,7 @@ async function GetTeamInfo(){
     if(response.status == 200){
         var responseData = await response.json();
         TeamName = responseData.TeamName;
-        document.getElementById("header").innerHTML = `<div><input type="text" value="${responseData.TeamName}" id="teamname-input"></div>`;
+        document.getElementById("header").innerHTML = `<input type="text" value="${responseData.TeamName}" id="teamname-input">`;
         document.title = `Springfest Apps | ${responseData.TeamName}`;
         document.getElementById("tshirt-color-name-input").value = responseData.TShirtColorName || "";
         document.getElementById("tshirt-color-hex-input").value = responseData.TShirtColorHEX || "";

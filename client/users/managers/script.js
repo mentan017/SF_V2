@@ -26,7 +26,7 @@ function DisplayManager(manager){
     teams = teams.substring(4);
     document.getElementById("users").innerHTML += `
     <a href="/user/view/${manager.ID}">
-        <div class="user">
+        <div class="user subsection-element">
             <p>${manager.Name}</p>
             <p>${manager.Email}</p>
             <p>${manager.Year}</p>

@@ -28,11 +28,9 @@ async function DisplayData(profile){
     TeamUUID = profile.TeamUUID;
     document.title = `Springfest Apps | ${profile.Name}`;
     document.getElementById("header").innerHTML = `
-    <div>
-        <h1>${profile.Name} - ${profile.Year}</h1>
-        <a href="mailto:${profile.Email}">${profile.Email}</a>
-        <a href="/team/team/${profile.TeamUUID}">${profile.TeamName}</a>
-    </div>`;
+    <h1>${profile.Name} - ${profile.Year}</h1>
+    <a href="mailto:${profile.Email}">${profile.Email}</a>
+    <a href="/team/team/${profile.TeamUUID}">${profile.TeamName}</a>`;
     var rolesOptionsHTML = '';
     for(var i=0; i<profile.Roles.length; i++){
         rolesOptionsHTML += `<option value="${profile.Roles[i].ID}">${profile.Roles[i].Name}</option>`

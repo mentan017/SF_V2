@@ -21,7 +21,7 @@ async function ExecuteQuery(){
     }
 }
 function DisplayResults(query, users){
-    document.getElementById("header-title").innerHTML = `<h1>Search results for: <br>"${query.split("_").join(" ").substring(6)}"</h1><p>${users.length} Results</p>`;
+    document.getElementById("header").innerHTML = `<h1>Search results for: <br>"${query.split("_").join(" ").substring(6)}"</h1><p>${users.length} Results</p>`;
     for(var i=0; i<users.length; i++){
         var teams = "";
         for(var j=0; j<users[i].Profiles.length; j++){
@@ -35,7 +35,7 @@ function DisplayResults(query, users){
         }
         document.getElementById("users").innerHTML += `
         <a href="/user/view/${users[i].ID}">
-            <div class="user" style="${style}">
+            <div class="user subsection-element" style="${style}">
                 <p>${users[i].Name}</p>
                 <p>${users[i].Email}</p>
                 <p>${users[i].Year}</p>

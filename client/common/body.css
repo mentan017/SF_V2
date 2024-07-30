@@ -1,0 +1,72 @@
+body{
+    background-color: #dddddd;
+}
+#header-container{
+    display: grid;
+    column-gap: 2rem;
+}
+#header, .create-team-container, #countdown, .search-container{
+    display: grid;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 3rem;
+    padding-bottom: 2rem;
+}
+#header a{
+    font-size: 1.5rem;
+    padding: 0.5rem;
+}
+.subsection-container{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+}
+h1{
+    font-size: 6rem;
+}
+h2{
+    font-size: 3rem;
+    padding: 1rem;
+}
+.template, .subsection-element{
+    color: black;
+    font-size: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    display: grid;
+    margin: 0 1rem;
+    border: black solid 2px;
+    border-top: none;
+}
+.subsection-elements a{
+    text-decoration: none;
+}
+.template{
+    border-top: black solid 2px;
+}
+.template *, .subsection-element *{
+    text-decoration: none;
+    color: black;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    border-left: solid 1px black;
+    border-right: solid 1px black;
+}
+.super-container{
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+#error{
+    font-size: 1rem;
+    color: red;
+    padding: 0;
+}

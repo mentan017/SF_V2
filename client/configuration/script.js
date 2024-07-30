@@ -79,7 +79,7 @@ function DisplayConfig(config){
     document.getElementById("teams").innerHTML = `<div class="template"><p>Position</p><p>Team Name</p><p>Move Up</p><p>Move Down</p></div>`;
     for(var i=0; i<config.TeamPriorities.length; i++){
         document.getElementById("teams").innerHTML += `
-        <div class="team" data-uuid="${config.TeamPriorities[i]}">
+        <div class="team subsection-element" data-uuid="${config.TeamPriorities[i]}">
             <p>${i+1}</p>
             <a href="/team/team/${config.TeamPriorities[i]}">${config.Teams[i]}</a>
             <p class="mvt-btn" data-mvt="1">Up &uarr;</p>

@@ -111,7 +111,7 @@ async function DisplayData(user){
         document.getElementById("activate-btn").style.backgroundColor = 'grey';
         document.getElementById("activate-btn").removeEventListener("click", ActivateUser);
     }
-    document.getElementById("header").innerHTML = `<div><h1>${user.Name} - ${user.Year}</h1><a href="mailto:${user.Email}">${user.Email}</a>`;
+    document.getElementById("header").innerHTML = `<h1>${user.Name} - ${user.Year}</h1><a href="mailto:${user.Email}">${user.Email}</a>`;
     document.getElementById("profiles").innerHTML = `
     <div class="template">
         <p>Team</p>
@@ -123,7 +123,7 @@ async function DisplayData(user){
         var style = (user.Profiles[i].GetsTShirt) ? ("") : ("background-color: rgba(255, 0, 0, 0.5) !important;");
         document.getElementById("profiles").innerHTML += `
         <a href="/profiles/${user.Profiles[i].ID}">
-            <div class="profile">
+            <div class="profile subsection-element">
                 <p>${user.Profiles[i].TeamName}</p>
                 <p>${user.Profiles[i].RoleName}</p>
                 <p>${user.Profiles[i].TShirtText}</p>

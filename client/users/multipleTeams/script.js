@@ -25,7 +25,7 @@ function DisplayUser(user){
     teams = teams.substring(4);
     document.getElementById("users").innerHTML += `
     <a href="/user/view/${user.ID}">
-        <div class="user">
+        <div class="user subsection-element">
             <p>${user.Name}</p>
             <p>${user.Email}</p>
             <p>${user.Year}</p>

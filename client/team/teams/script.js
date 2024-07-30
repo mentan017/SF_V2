@@ -61,25 +61,25 @@ async function FetchTeams(){
     }
 }
 function AddHeader(){
-    document.getElementById("header").innerHTML = `
-    <div>
+    document.getElementById("header-container").innerHTML = `
+    <div id="header">
         <h1>Teams</h1>
         <p id="teams-amount">xx teams</p>
     </div>`
 }
 function AddCreateTeamElement(){
-    document.getElementById("header").innerHTML += `
+    document.getElementById("header-container").innerHTML += `
     <div class="create-team-container">
         <p class="create-team-prompt">Create a new team</p>
         <div id="create-team-btn">+ Create</div>
     </div>`;
-    document.getElementById("header").classList.toggle("create-team-enabled");
+    document.getElementById("header-container").classList.toggle("create-team-enabled");
 }
 function DisplayTeams(teams){
     for(var i=0; i<teams.length; i++){
         document.getElementById("teams").innerHTML += `
         <a href="/team/team/${teams[i].UUID}">
-            <div class="team">
+            <div class="team subsection-element">
                 <p>${teams[i].Name}</p>
                 <p>${teams[i].Managers}</p>
                 <p>${teams[i].Coaches}</p>

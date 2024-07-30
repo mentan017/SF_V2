@@ -1,41 +1,8 @@
-body{
-    background-color: #dddddd;
+.subsection-element{
+    grid-template-columns: 1fr 2fr;
 }
-#header > div{
-    display: grid;
-    align-items: center;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 3rem;
-    padding-bottom: 2rem;
-}
-h1{
-    font-size: 6rem;
-}
-#header a{
-    font-size: 1.5rem;
-    padding: 0.5rem;
-}
-.subsection-container{
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 2rem;
-    margin: 1rem 0;
-}
-h2{
-    font-size: 3rem;
-    padding: 1rem;
-}
-.inputs-container{
-    padding: 0.5rem 1rem;
-}
-.inputs-container > div{
-    display: grid;
-    grid-template-columns: 1fr 4fr;
-}
-.inputs-container p, .inputs-container input, .inputs-container select{
-    padding: 0.5rem;
-    border: 2px solid black;
+.subsection-element:nth-child(1){
+    border-top: black solid 2px;
 }
 #remove-btn{
     background-color: red;

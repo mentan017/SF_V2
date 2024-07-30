@@ -15,7 +15,7 @@ async function GetData(){
 async function GetUserName(){
     var response = await fetch('/user/get-user-name', {method: "POST"});
     if(response.status == 200){
-        document.getElementById("header").innerHTML = `<div><h1>Welcome Back<br>${(await response.json()).Name}!</h1></div><div id="countdown"><p>0 Weeks, 0 Days</p><p>00h 00m 00s</p></div>`;
+        document.getElementById("header-container").innerHTML = `<div id="header"><h1>Welcome Back<br>${(await response.json()).Name}!</h1></div><div id="countdown"><p>0 Weeks, 0 Days</p><p>00h 00m 00s</p></div>`;
     }else if(response.status == 500){
         window.alert("An error occured in the servers, please try again later.");
     }else{

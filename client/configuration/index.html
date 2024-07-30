@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/common/reset.css">
     <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/common/body.css">
     <link rel="stylesheet" href="/configuration/style.css">
     <script type="text/javascript" src="/common/navigation.js" defer></script>
     <script type="text/javascript" src="/configuration/script.js" defer></script>
@@ -25,7 +26,7 @@
                     <p>Field</p>
                     <p>Date</p>
                 </div>
-                <div class="date">
+                <div class="date subsection-element">
                     <p>Springfest day</p>
                     <input type="date" id="springfestdate-input">
                 </div>
@@ -42,19 +43,19 @@
                     <p>Upload Button</p>
                     <p>View Button</p>
                 </div>
-                <div class="file">
+                <div class="file subsection-element">
                     <p>Logo</p>
                     <input type="file" id="logo-input">
                     <div class="upload-btn">Upload</div>
                     <a class="view-btn" target="_blank" href="/configuration/view/logo">View</a>
                 </div>
-                <div class="file">
+                <div class="file subsection-element">
                     <p>Students File</p>
                     <input type="file" id="students-input">
                     <div class="upload-btn">Upload</div>
                     <a class="view-btn" target="_blank" href="/configuration/view/students">View</a>
                 </div>
-                <div class="file">
+                <div class="file subsection-element">
                     <p>Teachers File</p>
                     <input type="file" id="teachers-input">
                     <div class="upload-btn">Upload</div>
@@ -80,7 +81,7 @@
             <div id="reset-btn">RESET ALL</div>
         </div>
     </div>
-    <div id="reset-super-container" style="display: none;">
+    <div id="reset-super-container" class="super-container" style="display: none;">
         <div class="reset-container">
             <h3>Confirmation of the reset</h3>
             <p>This will reset all the database, make sure you <a target="_blank" href="/configuration/export">export it</a> and save it before reseting it.</p>

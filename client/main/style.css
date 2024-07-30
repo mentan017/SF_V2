@@ -1,35 +1,13 @@
-body{
-    background-color: #dddddd;
-}
-#header{
-    display: grid;
+#header-container{
     grid-template-columns: 3fr 1fr;
-    column-gap: 2rem;
 }
-#header > div{
-    display: grid;
-    align-items: center;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 3rem;
-    padding-bottom: 2rem;
-}
-h1{
-    text-align: center;
-    font-size: 6rem;
-}
+h1{text-align: center;}
 #countdown p{
     text-align: center;
     font-size: 2rem;
 }
 #countdown > p:nth-child(2){
     font-size: 3.3rem;
-}
-.tasks-super-container{
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 2rem;
-    margin: 1rem 0;
 }
 .tasks-header{
     display: grid;
@@ -44,10 +22,6 @@ h1{
     border: solid 2px black;
     margin: 1rem 2rem;
     cursor: pointer;
-}
-h2{
-    font-size: 3rem;
-    padding: 1rem;
 }
 .task{
     display: grid;

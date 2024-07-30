@@ -16,10 +16,9 @@ async function GetRole(){
         await RemoveEventListeners();
         var responseData = await response.json();
         document.title = `Springfest Apps | ${responseData.TShirtText}`;
-        document.getElementById("header").innerHTML = `<div>
-            <input type="text" id="rolename-input" value="${responseData.Name}">
-            <a href="/team/team/${responseData.TeamUUID}">${responseData.TeamName}</a>
-        </div>`;
+        document.getElementById("header").innerHTML = `
+        <input type="text" id="rolename-input" value="${responseData.Name}">
+        <a href="/team/team/${responseData.TeamUUID}">${responseData.TeamName}</a>`;
         ParentTeamUUID = responseData.TeamUUID;
         document.getElementById("tshirtText-input").value = responseData.TShirtText;
         document.getElementById("getsTshirt-input").value = responseData.GetsTShirt;

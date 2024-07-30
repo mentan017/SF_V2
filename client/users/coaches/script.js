@@ -25,7 +25,7 @@ function DisplayCoach(coach){
     teams = teams.substring(4);
     document.getElementById("users").innerHTML += `
     <a href="/user/view/${coach.ID}">
-        <div class="user">
+        <div class="user subsection-element">
             <p>${coach.Name}</p>
             <p>${coach.Email}</p>
             <p>${coach.TShirtSize}</p>

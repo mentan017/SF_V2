@@ -22,7 +22,7 @@ async function GetUsers(){
     });
     if(response.status == 200){
         var responseData = await response.json();
-        document.getElementById("header-title").innerHTML = `<h1>Users</h1><p>${responseData.users} Members</p>`;
+        document.getElementById("header").innerHTML = `<h1>Users</h1><p>${responseData.users} Members</p>`;
     }else{
         window.alert("An error occured in the servers, please try again later.");
     }

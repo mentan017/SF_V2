@@ -1,25 +1,7 @@
-body{
-    background-color: #dddddd;
-}
-#header{
-    display: grid;
-    column-gap: 2rem;
-}
-#header.create-team-enabled{
+#header-container.create-team-enabled{
     grid-template-columns: 3fr 1fr;
 }
-#header > div{
-    display: grid;
-    align-items: center;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 3rem;
-    padding-bottom: 2rem;
-}
-h1{
-    font-size: 6rem;
-}
-#header p{
+#header-container p{
     font-size: 2.5rem;
 }
 .create-team-prompt{
@@ -36,51 +18,11 @@ h1{
     margin: 1rem auto;
     cursor: pointer;
 }
-.subsection-container{
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 2rem;
-    margin: 1rem 0;
-}
-h2{
-    font-size: 3rem;
-    padding: 1rem;
-}
-#teams > a{
-    text-decoration: none;
-}
-.team-template, .team{
-    color: black;
-    font-size: 1.5rem;
-    justify-content: center;
-    align-items: center;
-    display: grid;
+.template, .team{
     grid-template-columns: 7fr 1fr 1fr 1fr;
-    margin: 0 1rem;
-    border: black solid 2px;
-    border-top: none;
-}
-.team-template{
-    border-top: black solid 2px;
-}
-.team-template p, .team p{
-    padding: 0.3rem 0.5rem;
-    border-left: solid 1px black;
-    border-right: solid 1px black;
 }
 .team:hover{
     background: #eeeeee;
-}
-#create-team-form-super-container{
-    position: fixed;
-    height: 100vh;
-    width: 100vw;
-    top: 0;
-    left: 0;
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.7);
 }
 .create-team-form-container{
     background-color: #ffffff;

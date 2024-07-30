@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/common/reset.css">
     <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/common/body.css">
     <link rel="stylesheet" href="/users/dashboard/style.css">
     <script type="text/javascript" src="/common/navigation.js" defer></script>
     <script type="text/javascript" src="/users/dashboard/script.js" defer></script>
@@ -13,11 +14,8 @@
 <body>
     <div id="navigation"></div>
     <div class="main-content">
-        <div id="header">
-            <div id="header-title">
-                <h1>Users</h1>
-                <p>112 Members</p>
-            </div>
+        <div id="header-container">
+            <div id="header"></div>
             <div class="search-container">
                 <div><input type="text" id="search-input" placeholder="Search a user"></div>
                 <div id="search-btn">Search</div>
@@ -25,31 +23,31 @@
         </div>
         <div class="subsection-container">
             <h2>Filters</h2>
-            <div id="filters">
-                <div class="filter-template">
+            <div id="filters" class="subsection-elements">
+                <div class="template">
                     <p>Filter</p>
                     <p>Users</p>
                 </div>
                 <a href="/user/users-multiple-teams">
-                    <div class="filter">
+                    <div class="filter subsection-element">
                         <p>Users in multiple teams</p>
                         <p id="users-multiple-teams">12</p>
                     </div>
                 </a>
                 <a href="/user/users-multiple-tshirts">
-                    <div class="filter">
+                    <div class="filter subsection-element">
                         <p>Users with multiple T-shirts</p>
                         <p id="users-multiple-tshirts">3</p>
                     </div>
                 </a>
                 <a href="/user/managers">
-                    <div class="filter">
+                    <div class="filter subsection-element">
                         <p>Managers</p>
                         <p id="managers">32</p>
                     </div>
                 </a>
                 <a href="/user/coaches">
-                    <div class="filter">
+                    <div class="filter subsection-element">
                         <p>Coaches</p>
                         <p id="coaches">17</p>
                     </div>
