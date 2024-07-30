@@ -206,7 +206,6 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
         \\end{document}`;
         fs.writeFileSync(`${homeDir}/data/tshirt-order-${orderUUID}/presentation.tex`, presentation);
         execSync(`cd ${homeDir}/data/tshirt-order-${orderUUID}; pdflatex presentation.tex; mv presentation.tex T_Shirt_Order_Springfest.tex; mv presentation.pdf T_Shirt_Order_Springfest.pdf; rm presentation.*`);
-        //TODO T-Shirt Excel (for distribution)
         //Get the users who don't have a t-shirt but get a bracelet
         var braceletUsers = await ProfileModel.find({GetsTShirt: false, User: {$nin: usersCheck}});
         var braceletCheck = [];
