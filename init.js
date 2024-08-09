@@ -13,8 +13,7 @@ mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.PROJECT_NAME}`);
 var db = mongoose.connection;
 
 async function CreateAdmin(){
-    //TODO change default password for production
-    var password = crypto.createHash('sha256').update('test').digest('hex');
+    var password = crypto.createHash('sha256').update(process.env.DEFAULT_ADMIN_PASSWORD).digest('hex');
     var salt = await bcrypt.genSalt(10);
     var passwordHash = await bcrypt.hash(password, salt);
     var admin = new UserModel({

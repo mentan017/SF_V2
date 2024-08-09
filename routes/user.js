@@ -162,7 +162,7 @@ router.post('/get-user-navigation', checkAuth, async function(req, res, next){
         var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
         var navigation = `<div class="nav-img"><img src="${config.Logo}_256.${config.LogoExtension}" alt="Springfest 2024 logo"></div>
         <a href="/"><div>Home</div></a>`;
-        if(user.CanAccessMeetings || user.CanManageAllMeetings) navigation += `<a href="#"><div>Meetings</div></a>`;
+        //if(user.CanAccessMeetings || user.CanManageAllMeetings) navigation += `<a href="#"><div>Meetings</div></a>`;
         if(user.CanAccessTeams || user.CanManageAllTeams) navigation += `<a href="/team/list-teams"><div>Teams</div></a>`;
         if(user.CanManageAllUsers) navigation += `<a href="/user/dashboard"><div>Users</div></a>`;
         if(user.CanUseTools) navigation += `<a href="/tools"><div>Tools</div></a>`;
@@ -176,7 +176,6 @@ router.post('/get-user-navigation', checkAuth, async function(req, res, next){
 });
 router.post('/user-permissions', checkAuth, async function(req, res, next){
     try{
-        //TODO Give general information about user permissions (access to routes, management rights, ...)
         var user = await UserModel.findById(req.AuthedUser);
         if(user){
             var response = {
@@ -186,11 +185,9 @@ router.post('/user-permissions', checkAuth, async function(req, res, next){
                 TeamsRouteAccess: false,
                 UserRouteAccess: false,
                 ConfigurationRouteAccess: false,
-                //TODO add other routes access
                 ManageAllTeams: user.CanManageAllTeams,
                 ManageAllUsers: user.CanManageAllUsers,
             }
-            //TODO go through all user profiles to check for permissions (teams access)
             if(response.ManageAllTeams) response.TeamsRouteAccess = true;
             if(response.ManageAllUsers) response.UserRouteAccess = true;
 

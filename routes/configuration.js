@@ -105,8 +105,8 @@ router.get('/export', checkAuth, async function(req, res, next){
             fs.copyFileSync(`${homeDir}/config.json`, `${exportFolder}/config.json`);
             fs.mkdirSync(`${exportFolder}/other_resources`);
             fs.mkdirSync(`${exportFolder}/other_resources/images`);
-            fs.copyFileSync(`${homeDir}/resources/${config.StudentsFile}`,`${exportFolder}/other_resources/${config.StudentsFile}`);
-            fs.copyFileSync(`${homeDir}/resources/${config.TeachersFile}`,`${exportFolder}/other_resources/${config.TeachersFile}`);
+            if(config.StudentsFile != "students") fs.copyFileSync(`${homeDir}/resources/${config.StudentsFile}`,`${exportFolder}/other_resources/${config.StudentsFile}`);
+            if(config.TeachersFile != "teachers") fs.copyFileSync(`${homeDir}/resources/${config.TeachersFile}`,`${exportFolder}/other_resources/${config.TeachersFile}`);
             fs.copyFileSync(`${homeDir}/client${config.Logo}.${config.LogoExtension}`, `${exportFolder}/other_resources${config.Logo}.${config.LogoExtension}`);
             execSync(`cd ${homeDir}/data ; zip -r ${date.getDate()}_${months[date.getMonth()]}_${date.getUTCFullYear()}_${date.getHours()}_${date.getMinutes()}_Springfest_Export.zip ${date.getDate()}_${months[date.getMonth()]}_${date.getUTCFullYear()}_${date.getHours()}_${date.getMinutes()}_Springfest_Export; rm -rf ${exportFolder}`);
             res.status(200).download(`${exportFolder}.zip`);
@@ -134,6 +134,8 @@ router.post('/get-config', checkAuth, async function(req, res, next){
         }else{
             var config = {
                 SpringfestDate: 0, //Time in milliseconds
+                AbsencesFirstDay: 0,
+                AbsencesLastDay: 0,
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
                 StudentsFile: 'students',
@@ -152,6 +154,8 @@ router.post('/update-config', checkAuth, async function(req, res, next){
     try{
         var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
         config.SpringfestDate = req.body?.SpringfestDate;
+        config.AbsencesFirstDay = req.body?.AbsencesFirstDay;
+        config.AbsencesLastDay = req.body?.AbsencesLastDay;
         fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
     }catch(e){
         console.log(e);
@@ -263,6 +267,7 @@ router.post('/update-teams-priorities', checkAuth, async function(req, res, next
         var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
         config.TeamPriorities = req.body?.NewOrder || config.TeamPriorities;
         fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
+        UpdateUserTShirts();
         res.sendStatus(200);
     }catch(e){
         console.log(e);
@@ -292,6 +297,8 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
             }
             config = {
                 SpringfestDate: 0, //Time in milliseconds
+                AbsencesFirstDay: 0,
+                AbsencesLastDay: 0,
                 Logo: '/images/sf24_logo_black_no_bg', //Defaults logo to SF24 logo
                 LogoExtension: 'png',
                 StudentsFile: 'students',
@@ -299,7 +306,7 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
                 TeamPriorities: []
             }
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
-            var password = crypto.createHash('sha256').update('test').digest('hex');
+            var password = crypto.createHash('sha256').update(process.env.DEFAULT_ADMIN_PASSWORD).digest('hex');
             var salt = await bcrypt.genSalt(10);
             var passwordHash = await bcrypt.hash(password, salt);
             var admin = new UserModel({
@@ -317,7 +324,7 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
                 CanUseTools: true
             });
             await admin.save();
-            console.log('[INFO] Admin created successfully');
+            console.log('[INFO] Reset Successful');
             res.sendStatus(200);
         }else{
             res.sendStatus(400);
@@ -327,6 +334,35 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+
+//Functions
+
+async function UpdateUserTShirts(){
+    var users = await UserModel.find({});
+    for(var i=0; i<users.length; i++){
+        var profiles = await ProfileModel.find({User: users[i]._id});
+        var profileTShirtCount = await ProfileModel.countDocuments({User: users[i]._id, GetsTShirt: true});
+        if(profileTShirtCount == 1){
+            var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+            var tShirtConfig = config.TeamPriorities;
+            var lowestIndex = Infinity;
+            var otherProfileOverride = false;
+            for(var j=0; j<profiles.length; j++){
+                var profileTeam = await TeamModel.findById(profiles[j].Team);
+                var profileRole = await RoleModel.findById(profiles[j].Role);
+                if(profileRole.OverridesTShirtTeamPriority){
+                    lowestIndex = tShirtConfig.indexOf(profileTeam.UUID);
+                    otherProfileOverride = true;
+                }
+                if(profileRole.GetsTShirt && !otherProfileOverride && tShirtConfig.indexOf(profileTeam.UUID) < lowestIndex) lowestIndex = tShirtConfig.indexOf(profileTeam.UUID);
+                profiles[j].GetsTShirt = false;
+                await profiles[j].save();
+            }
+            var tShirtTeam = await TeamModel.findOne({UUID: tShirtConfig[lowestIndex]});
+            var finalProfile = await ProfileModel.findOneAndUpdate({User: users[i], Team: tShirtTeam._id}, {GetsTShirt: true});
+        }
+    }
+}
 
 //Export router
 module.exports = router;

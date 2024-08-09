@@ -7,7 +7,6 @@ const RoleSchema = new mongoose.Schema({
     Team:{
         type: mongoose.Schema.Types.ObjectId
     },
-    //TODO Permissions
     TShirtText:{
         type: String
     },

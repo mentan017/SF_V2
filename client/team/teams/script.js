@@ -19,7 +19,6 @@ async function SubmitNewTeam(){
     }
 }
 
-//TODO Fetch teams and other data
 async function GetUserData(){
     var response = await fetch('/user/user-permissions', {
         method: "POST",

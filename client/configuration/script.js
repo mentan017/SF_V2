@@ -21,11 +21,13 @@ async function GetConfig(){
 }
 async function UpdateConfig(){
     var springfestDate = document.getElementById("springfestdate-input").valueAsNumber || 0;
+    var absencesFirstDay = document.getElementById("absences-first-day-input").valueAsNumber || 0;
+    var absencesLastDay = document.getElementById("absences-last-day-input").valueAsNumber || 0;
     if(springfestDate >= 0){
         var response = await fetch('/configuration/update-config', {
             method: "POST",
             headers: {"Content-type": "application/json"},
-            body: JSON.stringify({SpringfestDate: springfestDate})
+            body: JSON.stringify({SpringfestDate: springfestDate, AbsencesFirstDay: absencesFirstDay, AbsencesLastDay: absencesLastDay})
         });    
         if(response.status == 200){
             GetConfig();
@@ -75,6 +77,8 @@ async function ResetAll(){
 function DisplayConfig(config){
     DateEventListner('remove');
     if(config.SpringfestDate != 0) document.getElementById("springfestdate-input").valueAsNumber = config.SpringfestDate;
+    if(config.AbsencesFirstDay != 0) document.getElementById("absences-first-day-input").valueAsNumber = config.AbsencesFirstDay;
+    if(config.AbsencesLastDay != 0) document.getElementById("absences-last-day-input").valueAsNumber = config.AbsencesLastDay;
     DateEventListner('add');
     document.getElementById("teams").innerHTML = `<div class="template"><p>Position</p><p>Team Name</p><p>Move Up</p><p>Move Down</p></div>`;
     for(var i=0; i<config.TeamPriorities.length; i++){
@@ -131,10 +135,15 @@ async function MoveTeam(team, mvt){
     }
 }
 function DateEventListner(mode){
+    var elements = ["springfestdate", "absences-first-day", "absences-last-day"];
     if(mode == 'add'){
-        document.getElementById("springfestdate-input").addEventListener("change", UpdateConfig);
+        for(var i=0; i<elements.length; i++){
+            document.getElementById(`${elements[i]}-input`).addEventListener("change", UpdateConfig);
+        }
     }else{
-        document.getElementById("springfestdate-input").removeEventListener("change", UpdateConfig);
+        for(var i=0; i<elements.length; i++){
+            document.getElementById(`${elements[i]}-input`).removeEventListener("change", UpdateConfig);
+        }
     }
 }
 function ConfirmReset(){

@@ -101,7 +101,6 @@ router.post('/get-tshirt-order-errors', checkAuth, async function(req, res, next
 });
 router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
     try{
-        //TODO create a logo with reverted colors (?) -> for the t-shirt image
         var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
         var orderUUID = uuidv4();
         execSync(`mkdir ${homeDir}/data/tshirt-order-${orderUUID}`);
@@ -237,7 +236,7 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
                 teamIndex = teamsCheck.indexOf((users[i].TShirts[j].Team).toString());
                 if(teamIndex == -1){
                     teamsCheck.push((users[i].TShirts[j].Team).toString());
-                    sheetNames.push((await TeamModel.findById(users[i].TShirts[j].Team)).Name.split("&").join("and"));
+                    sheetNames.push((await TeamModel.findById(users[i].TShirts[j].Team)).Name.split("&").join("&amp;"));
                     teamSheets.push([]); //Creating a new Sheet
                     teamIndex = teamsCheck.length - 1;
                     currentInputs = ['Name', 'Year', 'Email', 'Role', 'T-Shirt Text', 'T-Shirt Size', 'Has Bracelet'];

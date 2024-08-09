@@ -47,8 +47,11 @@ async function checkAuth(req, res, next){
 
 router.get('/:profileID', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        res.status(200).sendFile(`${homeDir}/client/profiles/profile/index.html`);
+        if(await CheckPermissions('profile', req.AuthedUser, req.params.profileID)){
+            res.status(200).sendFile(`${homeDir}/client/profiles/profile/index.html`);
+        }else{
+            res.status(401).redirect('/');
+        }
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -59,35 +62,38 @@ router.get('/:profileID', checkAuth, async function(req, res, next){
 
 router.post('/get-profile-info', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var profile = await ProfileModel.findById(req.body?.ProfileID);
-        if(profile){
-            var team = await TeamModel.findById(profile.Team);
-            var response = {
-                Name: profile.Name,
-                Email: profile.Email,
-                Year: (await UserModel.findById(profile.User)).Year,
-                TeamUUID: team.UUID,
-                TeamName: team.Name,
-                Role: profile.Role,
-                Roles: [],
-                CanManageSubTeams: profile.CanManageSubTeams,
-                CanManageTeam: profile.CanManageTeam,
-                CanManageTeamConfiguration: profile.CanManageTeamConfiguration,
-                GetsTShirt: profile.GetsTShirt,
-                TShirtSize: profile.TShirtSize,
-                TShirtText: profile.TShirtText
-            }
-            var rolesRaw = await RoleModel.find({Team: team._id}, null,{sort: {Name: 1}});
-            for(var i=0; i<rolesRaw.length; i++){
-                response.Roles.push({
-                    Name: rolesRaw[i].Name,
-                    ID: rolesRaw[i]._id
-                });
-            }
-            res.status(200).send(response);
+        if(await CheckPermissions('get-profile-info', req.AuthedUser, req.body?.ProfileID)){
+            var profile = await ProfileModel.findById(req.body?.ProfileID);
+            if(profile){
+                var team = await TeamModel.findById(profile.Team);
+                var response = {
+                    Name: profile.Name,
+                    Email: profile.Email,
+                    Year: (await UserModel.findById(profile.User)).Year,
+                    TeamUUID: team.UUID,
+                    TeamName: team.Name,
+                    Role: profile.Role,
+                    Roles: [],
+                    CanManageSubTeams: profile.CanManageSubTeams,
+                    CanManageTeam: profile.CanManageTeam,
+                    CanManageTeamConfiguration: profile.CanManageTeamConfiguration,
+                    GetsTShirt: profile.GetsTShirt,
+                    TShirtSize: profile.TShirtSize,
+                    TShirtText: profile.TShirtText
+                }
+                var rolesRaw = await RoleModel.find({Team: team._id}, null,{sort: {Name: 1}});
+                for(var i=0; i<rolesRaw.length; i++){
+                    response.Roles.push({
+                        Name: rolesRaw[i].Name,
+                        ID: rolesRaw[i]._id
+                    });
+                }
+                res.status(200).send(response);
+            }else{
+                res.sendStatus(400);
+            }    
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e)
@@ -96,30 +102,33 @@ router.post('/get-profile-info', checkAuth, async function(req, res, next){
 });
 router.post('/update-profile', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var request = req.body;
-        var profile = await ProfileModel.findById(request.ProfileID);
-        if(profile){
-            if(request.Role != profile.Role.toString()){
-                var role = await RoleModel.findById(request.Role);
-                profile.Role = request.Role;
-                profile.TShirtText = role.TShirtText;
-                profile.GetsTShirt = role.GetsTShirt;
-                profile.CanManageSubTeams = role.CanManageSubTeams;
-                profile.CanManageTeam = role.CanManageTeam;
-                profile.CanManageTeamConfiguration = role.CanManageTeamConfiguration;
+        if(await CheckPermissions('update-profile', req.AuthedUser, req.body?.ProfileID)){
+            var request = req.body;
+            var profile = await ProfileModel.findById(request?.ProfileID);
+            if(profile){
+                if(request.Role != profile.Role.toString()){
+                    var role = await RoleModel.findById(request.Role);
+                    profile.Role = request.Role;
+                    profile.TShirtText = role.TShirtText;
+                    profile.GetsTShirt = role.GetsTShirt;
+                    profile.CanManageSubTeams = role.CanManageSubTeams;
+                    profile.CanManageTeam = role.CanManageTeam;
+                    profile.CanManageTeamConfiguration = role.CanManageTeamConfiguration;
+                }else{
+                    profile.CanManageSubTeams = request.CanManageSubTeams || false;
+                    profile.CanManageTeam = request.CanManageTeam || false;
+                    profile.CanManageTeamConfiguration = request.CanManageTeamConfiguration || false;
+                    profile.GetsTShirt = request.GetsTShirt || false;
+                    profile.TShirtText = request.TShirtText;
+                }
+                profile.TShirtSize = request.TShirtSize;
+                await profile.save();
+                res.sendStatus(200);
             }else{
-                profile.CanManageSubTeams = request.CanManageSubTeams || false;
-                profile.CanManageTeam = request.CanManageTeam || false;
-                profile.CanManageTeamConfiguration = request.CanManageTeamConfiguration || false;
-                profile.GetsTShirt = request.GetsTShirt || false;
-                profile.TShirtText = request.TShirtText;
-            }
-            profile.TShirtSize = request.TShirtSize;
-            await profile.save();
-            res.sendStatus(200);
+                res.sendStatus(400);
+            }    
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
@@ -131,26 +140,61 @@ router.post('/update-profile', checkAuth, async function(req, res, next){
 
 router.delete('/remove', checkAuth, async function(req, res, next){
     try{
-        //TODO authentification
-        var profile = await ProfileModel.findByIdAndDelete(req.body?.ProfileID);
-        if(profile){
-            var team = await TeamModel.findById(profile.Team);
-            //TODO remove from subteams
-            var UpdatedUsers = [];
-            for(var i=0; i<team.Users.length; i++){
-                if(team.Users[i].toString() != profile._id.toString()) UpdatedUsers.push(team.Users[i]);
+        if(await CheckPermissions('remove', req.AuthedUser, req.body?.ProfileID)){
+            var profile = await ProfileModel.findByIdAndDelete(req.body?.ProfileID);
+            if(profile){
+                var team = await TeamModel.findById(profile.Team);
+                //TODO remove from subteams
+                var UpdatedUsers = [];
+                for(var i=0; i<team.Users.length; i++){
+                    if(team.Users[i].toString() != profile._id.toString()) UpdatedUsers.push(team.Users[i]);
+                }
+                team.Users = UpdatedUsers;
+                await team.save();
+                res.sendStatus(200);
+            }else{
+                res.sendStatus(400);
             }
-            team.Users = UpdatedUsers;
-            await team.save();
-            res.sendStatus(200);
         }else{
-            res.sendStatus(400);
+            res.sendStatus(401);
         }
     }catch(e){
         console.log(e);
         res.sendStatus(500);
     }
 });
+
+//Functions
+async function CheckPermissions(route, userID, targetProfileID){
+    try{
+        var routesConfiguration = [
+            {Route: 'profile', RequireOne: ['CanManageTeam', 'CanManageAllTeams', 'CanManageAllUsers']},
+            {Route: 'get-profile-info', RequireOne: ['CanManageTeam', 'CanManageAllTeams', 'CanManageAllUsers']},
+            {Route: 'update-profile', RequireOne: ['CanManageTeam', 'CanManageAllTeams', 'CanManageAllUsers']},
+            {Route: 'remove', RequireOne: ['CanManageTeam', 'CanManageAllTeams', 'CanManageAllUsers']},
+        ];
+        var AllowAccess = false;
+        var targetProfile = await ProfileModel.findById(targetProfileID);
+        var team = await TeamModel.findById(targetProfile.Team);
+        var profile = await ProfileModel.findOne({Team: team._id, User: userID});
+        var user = await UserModel.findById(userID);
+        for(var i=0; i<routesConfiguration.length; i++){
+            if(route == routesConfiguration[i].Route){
+                for(var j=0; j<routesConfiguration[i].RequireOne.length; j++){
+                    if(profile){
+                        if(user[routesConfiguration[i].RequireOne[j]] || profile[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                    }else{
+                        if(user[routesConfiguration[i].RequireOne[j]]) AllowAccess = true;
+                    }
+                }
+            }
+        }
+        return AllowAccess;
+    }catch(e){
+        console.log(e);
+        return 0;
+    }
+}
 
 //Export router
 module.exports = router;
