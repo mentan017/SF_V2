@@ -493,15 +493,16 @@ router.delete('/delete', checkAuth, async function(req, res, next){
             var user = await UserModel.findByIdAndDelete(req.body?.UserID);
             if(user){
                 var cookies = await CookieModel.deleteMany({UserID: user._id});
-                var profiles = await ProfileModel.deleteMany({User: user._id});
+                var profiles = await ProfileModel.find({User: user._id});
                 for(var i=0; i<profiles.length; i++){
                     var team = await TeamModel.findById(profiles[i].Team);
                     var users = [];
                     for(var j=0; j<team.Users.length; j++){
-                        if(team.Users[j] != profiles[i]._id) users.push(team.Users[j]);
+                        if(team.Users[j].toString() != profiles[i]._id.toString()) users.push(team.Users[j]);
                     }
                     team.Users = users;
                     await team.save();
+                    await ProfileModel.findByIdAndDelete(profiles[i]._id);
                 }
                 res.sendStatus(200);
             }else{

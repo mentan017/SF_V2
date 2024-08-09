@@ -103,6 +103,7 @@ router.get('/export', checkAuth, async function(req, res, next){
             fs.writeFileSync(`${exportFolder}/database/teams.json`, JSON.stringify(teams));
             fs.writeFileSync(`${exportFolder}/database/users.json`, JSON.stringify(users));
             fs.copyFileSync(`${homeDir}/config.json`, `${exportFolder}/config.json`);
+            fs.copyFileSync(`${homeDir}/absences.json`, `${exportFolder}/absences.json`);
             fs.mkdirSync(`${exportFolder}/other_resources`);
             fs.mkdirSync(`${exportFolder}/other_resources/images`);
             if(config.StudentsFile != "students") fs.copyFileSync(`${homeDir}/resources/${config.StudentsFile}`,`${exportFolder}/other_resources/${config.StudentsFile}`);
@@ -289,6 +290,7 @@ router.delete('/reset-all', checkAuth, async function(req, res, next){
             await UserModel.deleteMany({});
             var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
             execSync(`rm -rf ${homeDir}/data/*`);
+            execSync(`rm -rf ${homeDir}/absences.json`);
             execSync(`rm -rf ${homeDir}/resources/${config.StudentsFile}`);
             execSync(`rm -rf ${homeDir}/resources/${config.TeachersFile}`);
             var images = fs.readdirSync(`${homeDir}/client/images/`);

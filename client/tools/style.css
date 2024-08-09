@@ -14,3 +14,50 @@
     margin-bottom: 0;
     cursor: pointer;
 }
+#absences-content{
+    text-align: center;
+    color: black;
+    font-size: 1.5rem;
+    grid-template-columns: max-content 1fr;
+    justify-content: center;
+    align-items: center;
+    display: grid;
+    margin: 0 1rem;
+    border: black solid 2px;
+}
+.date-selector-container{
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    align-items: center;
+}
+.periods, .periods-input-container > div{
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+}
+.periods > p{
+    padding: 0.5rem;
+}
+#teams{
+    border-right: black solid 2px;
+}
+#teams > div{
+    padding: 0.5rem 2rem;
+    border-bottom: black solid 2px;
+}
+.change-date{
+    padding: 1rem 2rem;
+    cursor: pointer;
+}
+#absences-previous-date{
+    border-right: black solid 2px;
+}
+#absences-next-date{
+    border-left: black solid 2px;
+}
+#timetables > div > div{
+    border-bottom: black solid 2px;
+}
+.periods-input-container > div > input{
+    height: 1.5rem;
+    margin: 0.5rem;
+}

@@ -198,7 +198,7 @@ router.post('/update-user', checkAuth, async function(req, res, next){
                 profile.TShirtText = role.TShirtText;
                 var GetsTShirt = role.GetsTShirt;
                 if(GetsTShirt){
-                    var otherProfiles = await ProfileModel.find({Email: profile[i].Email});
+                    var otherProfiles = await ProfileModel.find({Email: profile.Email});
                     if(otherProfiles.length > 0){
                         var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
                         var TShirtPriorityList = config.TeamPriorities;

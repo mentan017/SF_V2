@@ -1,6 +1,7 @@
 resources
 .env
 config.json
+absences.json
 cert
 node_modules
 client/images/*

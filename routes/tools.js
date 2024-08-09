@@ -270,6 +270,38 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+router.post('/get-absences-config', checkAuth, async function(req, res, next){
+    try{
+        if(fs.existsSync(`${homeDir}/absences.json`)){
+            var absences = fs.readFileSync(`${homeDir}/absences.json`, 'utf-8');
+            res.status(200).send(absences);
+        }else{
+            if(fs.existsSync(`${homeDir}/config.json`)){
+                var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+                if(config.AbsencesFirstDay != 0 && config.AbsencesLastDay != 0){
+                    var absences = [];
+                    var teams = await TeamModel.find({});
+                    var springfestPeriods = (((config.AbsencesLastDay-config.AbsencesFirstDay)/(24*3600*1000))+1)*9;
+                    var arrayLength = (springfestPeriods-springfestPeriods%32)/32;
+                    if(springfestPeriods%32) arrayLength++;
+                    var absencesPeriods = new Array(arrayLength).fill(0);
+                    for(var i=0; i<teams.length; i++){
+                        absences.push({Team: teams[i].UUID, TeamName: teams[i].Name, Absences: absencesPeriods});
+                    }
+                    fs.writeFileSync(`${homeDir}/absences.json`, JSON.stringify(absences));
+                    res.status(200).send(absences);
+                }else{
+                    res.status(428).send({Error: "The start and end dates of the Springfest have not been configured yet."})
+                }
+            }else{
+                res.status(428).send({Error: "The start and end dates of the Springfest have not been configured yet."})
+            }
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 
 //Export router
 module.exports = router;

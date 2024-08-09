@@ -1,11 +1,12 @@
 var CanCreateTShirtOrder = false;
 
-window.onload = GetErrors();
+window.onload = InitializeTools();
 
 document.getElementById("create-tshirt-order-btn").addEventListener("click", CreateTShirtOrder);
 
-function GetErrors(){
+function InitializeTools(){
     GetTShirtOrderErrors();
+    GetAbsences();
 }
 async function GetTShirtOrderErrors(){
     var response = await fetch('/tool/get-tshirt-order-errors', {method: "POST"});
@@ -23,6 +24,15 @@ async function GetTShirtOrderErrors(){
         }
     }else{
         window.alert("An error occured in the servers, please try again later.");
+    }
+}
+async function GetAbsences(){
+    var response = await fetch('/tool/get-absences-config', {method: "POST"});
+    if(response.status == 200){
+        var responseData = await response.json();
+        for(var i=0; i<responseData.length; i++){
+            DisplayAbsences(responseData[i]);
+        }
     }
 }
 async function CreateTShirtOrder(){
@@ -48,4 +58,17 @@ function DisplayTimer(element, time){
     }else{
         if(element == 'create-tshirt-order-btn')document.getElementById(element).innerHTML = `Create Order`;
     }
+}
+function DisplayAbsences(team){
+    document.getElementById("teams").innerHTML += `<div>${team.TeamName}</div>`;
+    var periods = '';
+    for(var i=0; i<5; i++){
+        var display = (i>0) ? "none" : "grid"
+        periods += `<div style="display: ${display};">`;
+        for(var j=0; j<9; j++){
+            periods += `<input type="checkbox">`;
+        }
+        periods += `</div>`
+    }
+    document.getElementById("timetables").innerHTML += `<div class="periods-input-container">${periods}</div>`;
 }
