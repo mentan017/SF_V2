@@ -76,7 +76,7 @@ async function SaveAbsences(){
     var absences = [];
     for(var i=0; i<inputContainers.length; i++){
         var teamAbsences = {};
-        teamAbsences.teamUUID = inputContainers[i].getAttribute("data-uuid");
+        teamAbsences.Team = inputContainers[i].getAttribute("data-uuid");
         var inputs = inputContainers[i].querySelectorAll("input");
         var arrayLength = (inputs.length-inputs.length%32)/32;
         if(inputs.length%32) arrayLength++;
@@ -139,7 +139,7 @@ function DisplayAbsences(team){
         else periods += `<input type="checkbox">`;
         if(!((i+1)%9)) periods += `</div>`
     }
-    document.getElementById("timetables").innerHTML += `<div class="periods-input-container" data-uuid="${team.teamUUID}">${periods}</div>`;
+    document.getElementById("timetables").innerHTML += `<div class="periods-input-container" data-uuid="${team.Team}">${periods}</div>`;
 }
 function DisplaySpringfestDate(springfestDay){
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

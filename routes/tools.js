@@ -427,7 +427,7 @@ router.put('/update-absences', checkAuth, async function(req, res, next){
     try{
         var absences = req.body;
         for(var i=0; i<absences.length; i++){
-            absences[i].TeamName = (await TeamModel.findOne({UUID: absences[i].teamUUID})).Name;
+            absences[i].TeamName = (await TeamModel.findOne({UUID: absences[i].Team})).Name;
         }
         fs.writeFileSync(`${homeDir}/absences.json`, JSON.stringify(absences));
         res.sendStatus(200);

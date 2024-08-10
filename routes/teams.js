@@ -276,6 +276,7 @@ router.put('/create-team', checkAuth, async function(req, res, next){
             fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
             res.status(200).send({UUID: team.UUID});
             UpdateRoles(roles, team._id, team.Name);
+            UpdateAbsencesConfig();
         }else{
             res.sendStatus(401);
         }
@@ -360,6 +361,7 @@ router.delete('/delete/:teamUUID', checkAuth, async function(req, res, next){
                 config.TeamPriorities = TeamPriorities;
                 fs.writeFileSync(`${homeDir}/config.json`, JSON.stringify(config));
                 res.sendStatus(200);
+                UpdateAbsencesConfig();
             }else{
                 res.sendStatus(400);
             }
@@ -520,6 +522,33 @@ async function AddTeamUser(teamID, email, tShirtSize, roleID){
     }catch(e){
         console.log(e);
         return null;
+    }
+}
+async function UpdateAbsencesConfig(){
+    try{
+        if(fs.existsSync(`${homeDir}/config.json`)){
+            var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+            if(config.AbsencesFirstDay != 0 && config.AbsencesLastDay != 0){
+                var absences = [];
+                var teams = await TeamModel.find({}, null, {sort: {Name: 1}});
+                var springfestPeriods = (((config.AbsencesLastDay-config.AbsencesFirstDay)/(24*3600*1000))+1)*9;
+                var arrayLength = (springfestPeriods-springfestPeriods%32)/32;
+                if(springfestPeriods%32) arrayLength++;
+                var absencesPeriods = new Array(arrayLength).fill(0);
+                for(var i=0; i<teams.length; i++){
+                    absences.push({Team: teams[i].UUID, TeamName: teams[i].Name, Absences: absencesPeriods});
+                }
+                fs.writeFileSync(`${homeDir}/absences.json`, JSON.stringify(absences));
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
+        }
+    }catch(e){
+        console.log(e);
+        return 0;
     }
 }
 async function CheckPermissions(route, userID, teamUUID){
