@@ -31,14 +31,13 @@
             <div id="absences-content">
                 <div id="teams">
                     <div style="padding: calc(2.25rem + 1px) 2rem;">Team</div>
-                    <div>IT Team</div>
                 </div>
                 <div id="timetables">
                     <div>
                         <div class="date-selector-container">
-                            <div class="change-date" id="absences-previous-date">&larr;</div>
-                            <div>Wednesday, 30 May 2024</div>
-                            <div class="change-date" id="absences-next-date">&rarr;</div>
+                            <div class="change-date" id="absences-previous-date" onclick="UpdateAbsencesDate(-1)">&larr;</div>
+                            <div id="absences-current-date">Wednesday, 30 May 2024</div>
+                            <div class="change-date" id="absences-next-date" onclick="UpdateAbsencesDate(1)">&rarr;</div>
                         </div>
                         <div class="periods">
                             <p>P1</p>
@@ -52,63 +51,12 @@
                             <p>P9</p>
                         </div>
                     </div>
-                    <div class="periods-input-container">
-                        <div style="display: none;">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                        </div>
-                        <div style="display: none;">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">    
-                        </div>
-                        <div>
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">    
-                        </div>
-                        <div style="display: none;">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">    
-                        </div>
-                        <div style="display: none;">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">
-                            <input type="checkbox">    
-                        </div>
-                    </div>
+                </div>
+            </div>
+            <div id="actions-container">
+                <div>
+                    <div id="save-absences" style="background-color: green;">Save Absences</div>
+                    <div id="create-absences">Create Absences</div>    
                 </div>
             </div>
         </div>

@@ -61,3 +61,21 @@
     height: 1.5rem;
     margin: 0.5rem;
 }
+#actions-container{
+    width: max-content;
+    margin: auto;
+    padding-top: 2rem;
+}
+#actions-container > div{
+    color: white;
+    font-size: 1.5rem;
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: 2rem;
+}
+#actions-container > div > div{
+    background-color: blue;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+}

@@ -270,6 +270,108 @@ router.post('/create-tshirt-order', checkAuth, async function(req, res, next){
         res.sendStatus(500);
     }
 });
+router.post('/create-absences-excel', checkAuth, async function(req, res, next){
+    try{
+        var absences = JSON.parse(fs.readFileSync(`${homeDir}/absences.json`, 'utf-8'));
+        var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+        var usersRaw = await UserModel.find({}, null, {sort: {Year: 1, Name: 1}});
+        var users = {};
+        var years = [];
+        var yearRegularExpression = /S[0-9][A-Z]{3,3}\b/;
+        for(var i=0; i<usersRaw.length; i++){
+            var year = (yearRegularExpression.test(usersRaw[i].Year)) ? usersRaw[i].Year.match(/S[0-9]/)[0] : "Other";
+            users[`${usersRaw[i]._id.toString()}`] = {
+                Name: usersRaw[i].Name,
+                Email: usersRaw[i].Email,
+                Year: year,
+                Class: usersRaw[i].Year,
+                Absences: new Array(absences[0].Absences.length).fill(0)
+            };
+            if(years.indexOf(year) == -1 && yearRegularExpression.test(usersRaw[i].Year)) years.push(year);
+        }
+        years.push("Other");
+        for(var i=0; i<absences.length; i++){
+            var team = await TeamModel.findOne({UUID: absences[i].teamUUID});
+            var profiles = await ProfileModel.find({Team: team._id});
+            for(var j=0; j<profiles.length; j++){
+                for(var k=0; k<absences[i].Absences.length; k++){
+                    users[`${profiles[j].User.toString()}`].Absences[k] |= absences[i].Absences[k];
+                }
+            }
+        }
+        var sheetHeaderRows = [[
+            {type: String, value: "Name", rowSpan: 2, align: "center", alignVertical: "center"},
+            {type: String, value: "Email", rowSpan: 2, align: "center", alignVertical: "center"},
+            {type: String, value: "Class", rowSpan: 2, align: "center", alignVertical: "center"}],
+            [null, null, null]];
+        var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var currentSpringfestDay = new Date();
+        currentSpringfestDay.setTime(config.AbsencesFirstDay);
+        var springfestPeriods = (((config.AbsencesLastDay-config.AbsencesFirstDay)/(24*3600*1000))+1)*9;
+        for(var i=0; i<springfestPeriods; i++){
+            if(i%9){
+                sheetHeaderRows[0].push(null);
+                sheetHeaderRows[1].push({type: String, value:`P${(i%9)+1}`, align: "center"});
+            }else{
+                sheetHeaderRows[0].push({type: String, value: `${days[currentSpringfestDay.getDay()]}, ${currentSpringfestDay.getDate()} ${months[currentSpringfestDay.getMonth()]}`, span: 9, align: "center", leftBorderColor: "#000000", leftBorderStyle: "thick"});
+                currentSpringfestDay.setTime(currentSpringfestDay.getTime()+1000*3600*24);
+                sheetHeaderRows[1].push({type: String, value:`P${(i%9)+1}`, align: "center", leftBorderColor: "#000000", leftBorderStyle: "thick"});
+            }
+        }
+        var yearSheets = [];
+        var sheetNames = [];
+        var user = {};
+        var IsExcused = false;
+        for(var i=0; i<usersRaw.length; i++){
+            user = users[`${usersRaw[i]._id.toString()}`];
+            var hasToBeExused = false;
+            for(var j=0; j<user.Absences.length; j++){
+                if(user.Absences[j]){
+                    j=user.Absences.length;
+                    hasToBeExused = true;
+                }
+            }
+            if(hasToBeExused){
+                var sheetIndex = sheetNames.indexOf(user.Year);
+                if(sheetIndex == -1){
+                    //yearSheets.push([sheetHeaderRows[0], sheetHeaderRows[1]])
+                    yearSheets.push([]);
+                    sheetNames.push(user.Year);
+                    sheetIndex = sheetNames.indexOf(user.Year);
+                    yearSheets[sheetIndex].push(sheetHeaderRows[0]);
+                    yearSheets[sheetIndex].push(sheetHeaderRows[1]);
+                }
+                var userData = [
+                    {type: String, value: user.Name, align: "center"},
+                    {type: String, value: user.Email, align: "center"},
+                    {type: String, value: user.Class, align: "center"}
+                ];
+                for(var j=0; j<springfestPeriods; j++){
+                    IsExcused = user.Absences[user.Absences.length-1-Math.floor(j/32)]%2;
+                    user.Absences[user.Absences.length-1-Math.floor(j/32)] >>= 1;
+                    if(IsExcused && (j%9)) userData.push({type: String, value: "Excused", align: "center", color: "#ffffff", backgroundColor: "#00ff00"});
+                    else if(IsExcused) userData.push({type: String, value: "Excused", align: "center", color: "#ffffff", backgroundColor: "#00ff00", leftBorderColor: "#000000", leftBorderStyle: "thick"});
+                    else if(j%9) userData.push(null);
+                    else userData.push({type: String, value: "", leftBorderColor: "#000000", leftBorderStyle: "thick"});
+                }
+                yearSheets[sheetIndex].push(userData);
+            }
+        }
+        fs.writeFileSync('./data/temp.json', JSON.stringify(yearSheets));
+        var uuid = uuidv4();
+        await writeXlsxFile(yearSheets, {
+            sheets: sheetNames,
+            filePath: `${homeDir}/data/springfest-absences-${uuid}.xlsx`,
+            stickyRowsCount: 2
+        });
+        res.status(200).send({File: `springfest-absences-${uuid}.xlsx`});
+        //res.sendStatus(200);
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
 router.post('/get-absences-config', checkAuth, async function(req, res, next){
     try{
         if(fs.existsSync(`${homeDir}/absences.json`)){
@@ -280,7 +382,7 @@ router.post('/get-absences-config', checkAuth, async function(req, res, next){
                 var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
                 if(config.AbsencesFirstDay != 0 && config.AbsencesLastDay != 0){
                     var absences = [];
-                    var teams = await TeamModel.find({});
+                    var teams = await TeamModel.find({}, null, {sort: {Name: 1}});
                     var springfestPeriods = (((config.AbsencesLastDay-config.AbsencesFirstDay)/(24*3600*1000))+1)*9;
                     var arrayLength = (springfestPeriods-springfestPeriods%32)/32;
                     if(springfestPeriods%32) arrayLength++;
@@ -297,6 +399,38 @@ router.post('/get-absences-config', checkAuth, async function(req, res, next){
                 res.status(428).send({Error: "The start and end dates of the Springfest have not been configured yet."})
             }
         }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+router.post('/get-springfest-dates', checkAuth, async function(req, res, next){
+    try{
+        if(fs.existsSync(`${homeDir}/config.json`)){
+            var config = JSON.parse(fs.readFileSync(`${homeDir}/config.json`, 'utf-8'));
+            if(config.AbsencesFirstDay && config.AbsencesLastDay){
+                res.status(200).send({AbsencesFirstDay: config.AbsencesFirstDay, AbsencesLastDay: config.AbsencesLastDay});
+            }else{
+                res.status(428).send({Error: "The start and end dates of the Springfest have not been configured yet."})       
+            }
+        }else{
+            res.status(428).send({Error: "The start and end dates of the Springfest have not been configured yet."})
+        }
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+//PUT routes
+router.put('/update-absences', checkAuth, async function(req, res, next){
+    try{
+        var absences = req.body;
+        for(var i=0; i<absences.length; i++){
+            absences[i].TeamName = (await TeamModel.findOne({UUID: absences[i].teamUUID})).Name;
+        }
+        fs.writeFileSync(`${homeDir}/absences.json`, JSON.stringify(absences));
+        res.sendStatus(200);
     }catch(e){
         console.log(e);
         res.sendStatus(500);
