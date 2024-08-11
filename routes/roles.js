@@ -113,7 +113,7 @@ router.post('/update-role', checkAuth, async function(req, res, next){
                 //Update the users
                 var profiles = await ProfileModel.find({Role: role._id});
                 for(var i=0; i<profiles.length; i++){
-                    profiles[i].TShirtText = role.TShirtText;
+                    if(profiles[i].TShirtText == oldText) profiles[i].TShirtText = role.TShirtText;
                     profiles[i].CanManageSubTeams = role.CanManageSubTeams;
                     profiles[i].CanManageTeam = role.CanManageTeam;
                     profiles[i].CanManageTeamConfiguration = role.CanManageTeamConfiguration;

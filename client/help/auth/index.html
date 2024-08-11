@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/common/reset.css">
+    <link rel="stylesheet" href="/common/navigation.css">
+    <link rel="stylesheet" href="/common/body.css">
+    <link rel="stylesheet" href="/help/common/style.css">
+    <link rel="stylesheet" href="/help/auth/style.css">
+    <script type="text/javascript" src="/common/navigation.js" defer></script>
+    <script type="text/javascript" src="/help/auth/script.js" defer></script>
+    <title>Springfest Apps | Help: Authentification</title>
+</head>
+<body>
+    <div id="navigation"></div>
+    <div class="main-content">
+        <div id="header">
+            <h1>Authentification</h1>
+        </div>
+        <div class="text-container">
+            <div class="subsection">
+                <h2>How to reset a password</h2>
+                <p>The easiest way of reseting password is to directly modify the MongoDB database. In both cases, we will need access to the database, ideally through MongoDB Compass</p>
+            </div>
+            <div class="subsection">
+                <h3>Method 1: Removing the password and activating the user</h3>
+                <p>In order to use this method, we need access to an account/user with the permission <span class="permission">CanManageAllUsers</span> set to true, we will call this user "admin".<br>
+                First, we delete the password from the database, as shown here using MongoDB Compass:</p>
+            </div>
+            <div class="subsection image">
+                <img alt="Deleting a user password using MongoDB Compass" src="/help/images/authentification_1.png">
+            </div>
+            <div class="subsection">
+                <p>Then the admin goes to the user page of the user requesting a password reset and he activates the user. This will provide the admin with a new password for the user.</p>
+            </div>
+            <div class="subsection image">
+                <img alt="Activating the user from an admin account" src="/help/images/authentification_2.png">
+            </div>
+            <div class="subsection">
+                <h3>Method 2: Replacing the password in the database</h3>
+                <p></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

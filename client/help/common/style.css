@@ -1,0 +1,39 @@
+@font-face{
+    font-family: Terminus;
+    src: url('/help/common/Terminus_Font/TerminessNerdFontMono-Regular.ttf');
+}
+.text-container{
+    max-width: 1200px;
+    margin: 1rem auto;
+    background-color: #ffffff;
+    padding-bottom: 1rem;
+}
+.text-container h2{
+    text-decoration: underline;
+}
+.text-container h3{
+    font-size: 2.3rem;
+    padding: 1rem;
+    text-decoration: underline;
+}
+.text-container p{
+    font-size: 1.5rem;
+    padding: 1rem;
+    padding-top: 0.5rem;
+}
+.subsection{
+    padding: 1rem 1.5rem 0 1.5rem;
+    padding-bottom: none !important;
+}
+.permission{
+    font-family: Terminus;
+    padding: 0 10px;
+}
+.image{
+    max-width: calc(1200px - 5rem);
+    margin: auto;
+}
+.image img{
+    max-width: calc(1196px - 5rem);
+    border: solid 2px black;
+}

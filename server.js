@@ -83,7 +83,7 @@ app.post('/get-springfest-date', checkAuth, async function(req, res, next){
         console.log(e);
         res.sendStatus(500);
     }
-})
+});
 
 //Connect routes
 app.use('/auth', AuthRouter);

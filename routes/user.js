@@ -167,7 +167,8 @@ router.post('/get-user-navigation', checkAuth, async function(req, res, next){
         if(user.CanManageAllUsers) navigation += `<a href="/user/dashboard"><div>Users</div></a>`;
         if(user.CanUseTools) navigation += `<a href="/tools"><div>Tools</div></a>`;
         if(user.CanManageConfiguration) navigation += `<a href="/configuration"><div>Configuration</div></a>`;
-        navigation += `<a href="#"><div>Help</div></a>`;
+        navigation += `<a href="/help/main"><div>Help</div></a>`;
+        navigation += `<a href="/auth/logout"><div>Logout</div></a>`;
         res.status(200).send({Navigation: navigation});
     }catch(e){
         console.log(e);

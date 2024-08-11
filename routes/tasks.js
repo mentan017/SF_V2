@@ -96,7 +96,7 @@ router.post('/task/:uuid', checkAuth, async function(req, res){
                 }
                 res.status(200).send(taskResponse);
             }else{
-                res.sendStatus(401)
+                res.sendStatus(401);
             }
         }else{
             res.sendStatus(400);
