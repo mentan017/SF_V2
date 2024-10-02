@@ -2,10 +2,12 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const fs = require('fs');
 require('dotenv').config();
 
 //Import MongoDB models
 const UserModel = require('./models/user.js');
+const homeDir = __dirname;
 
 //Connect to MongoDB database
 mongoose.set("strictQuery", false);
