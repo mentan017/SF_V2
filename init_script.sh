@@ -14,6 +14,9 @@ cd ../
 echo "[INFO] Creating a resources folder"
 mkdir resources
 
+echo "[INFO] Creating a data folder"
+mkdir data
+
 echo "[INFO] Creating default environment variables"
 touch .env
 echo "PROJECT_NAME=\"Springfest_Apps_V2\"" >> .env

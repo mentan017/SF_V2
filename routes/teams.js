@@ -196,6 +196,7 @@ router.post('/update-user', checkAuth, async function(req, res, next){
                 profile.CanManageSubTeams = role.CanManageSubTeams;
                 profile.CanManageTeam = role.CanManageTeam;
                 profile.TShirtText = role.TShirtText;
+                var team = await TeamModel.findById(profile.Team);
                 var GetsTShirt = role.GetsTShirt;
                 if(GetsTShirt){
                     var otherProfiles = await ProfileModel.find({Email: profile.Email});
