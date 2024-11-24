@@ -97,8 +97,8 @@ router.post('/update-role', checkAuth, async function(req, res, next){
                 var oldName = role.Name;
                 role.Name = request.Role;
                 var oldText = role.TShirtText;
+                var team = await TeamModel.findById(role.Team);
                 if(request.TShirtText == oldText && oldName != request.Role){
-                    var team = await TeamModel.findById(role.Team);
                     role.TShirtText = `${team.Name} ${role.Name}`;
                 }else{
                     role.TShirtText = request.TShirtText;
