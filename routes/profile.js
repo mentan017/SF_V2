@@ -106,6 +106,7 @@ router.post('/update-profile', checkAuth, async function(req, res, next){
             var request = req.body;
             var profile = await ProfileModel.findById(request?.ProfileID);
             if(profile){
+                console.log(`${request.Role} != ${profile.Role.toString()}`);
                 if(request.Role != profile.Role.toString()){
                     var role = await RoleModel.findById(request.Role);
                     profile.Role = request.Role;
